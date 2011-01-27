@@ -1,0 +1,17 @@
+#!/usr/bin/ruby
+
+# deploy - a script to deploy the "new" style rails websites on unicorn via git
+# Usage: ./deploy abc/growhealthy production
+# Author: jtd
+# Created: 1/27/11
+
+APP_SERVERS = %w(eel jellyfish squid tuna)
+MIGRATION_SERVER = %w(tuna)
+
+class Deployment
+  def initialize application_name, environment
+    STDERR.puts "Deploying #{application_name} #{environment}..."
+  end
+end
+
+Deployment.new *ARGV
