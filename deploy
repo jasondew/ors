@@ -27,6 +27,7 @@ class Deployment
     fatal "Usage: ./#{script_name} <application name> <environment> [options]" unless args.size >= 2
     @name, @environment, *@options = *args
     @pretending = (not (@options & ["-p", "--pretend"]).empty?)
+    @use_gateway = (not (@options & ["-ng", "--no-gateway"]).empty?)
 
     fatal "Invalid environment: #{environment}" unless %w(production demo staging).include?(@environment.downcase)
 
@@ -163,7 +164,7 @@ class Deployment
   def remote_execute server, *command_array
     commands = command_array.join " && "
 
-    if defined?(GATEWAY)
+    if defined?(GATEWAY) && @use_gateway
       command = %(ssh #{GATEWAY} 'ssh #{DEPLOY_USER}@#{server} "#{commands}"')
     else
       command = %(ssh #{DEPLOY_USER}@#{server} "#{commands}")
