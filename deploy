@@ -88,6 +88,7 @@ class Deployment
     info "updating #{name} #{environment}..."
 
     execute_in_parallel(ALL_SERVERS) {|server| update_code server }
+    execute_in_parallel(RUBY_SERVERS) {|server| bundle_install server }
   end
 
   protected
@@ -119,7 +120,14 @@ class Deployment
     remote_execute server, %(cd #{deploy_directory}),
                            %(git fetch),
                            %(git checkout -q -f origin/#{environment}),
-                           %(git reset --hard),
+                           %(git reset --hard)
+  end
+
+  def bundle_install server
+    info "[#{server}] installing bundle..."
+
+    remote_execute server, %(source ~/.rvm/scripts/rvm),
+                           %(cd #{deploy_directory}),
                            %(bundle install --without development test osx)
   end
 
