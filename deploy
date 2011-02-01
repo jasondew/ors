@@ -19,7 +19,7 @@ RUBY_SERVERS = APP_SERVERS + [MIGRATION_SERVER]
 
 class Deployment
 
-  attr_reader :name, :environment, :pretending, :use_gateway
+  attr_reader :name, :environment, :pretending, :use_gateway, :rails_2
 
   def initialize args
     script_name = $0.gsub(/^\.\//, "").split(/\//).last
@@ -29,6 +29,7 @@ class Deployment
 
     @pretending = (not (@options & ["-p", "--pretend"]).empty?)
     @use_gateway = (@options & ["-ng", "--no-gateway"]).empty?
+    @rails_2 = (not (@options & ["-r2", "--rails-2"]).empty?)
 
     fatal "Invalid environment: #{environment}" unless %w(production demo staging).include?(@environment.downcase)
 
@@ -136,7 +137,7 @@ class Deployment
 
     remote_execute server, %(source ~/.rvm/scripts/rvm),
                            %(cd #{deploy_directory}),
-                           %(bundle exec unicorn -c config/unicorn.rb -D -E #{environment})
+                           %(bundle exec #{unicorn} -c config/unicorn.rb -D -E #{environment})
   end
 
   def stop_server server
@@ -181,6 +182,14 @@ class Deployment
 
     (pretending ? command : %x[#{command}]).split("\n").each do |result|
       info("[#{server}] #{result}")
+    end
+  end
+
+  def unicorn
+    if rails_2
+      "unicorn_rails"
+    else
+      "unicorn"
     end
   end
 
