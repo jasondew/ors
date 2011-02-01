@@ -126,7 +126,9 @@ class Deployment
   def bundle_install server
     info "[#{server}] installing bundle..."
 
-    remote_execute server, %(bundle install --without development test osx)
+    remote_execute server, %(source ~/.rvm/scripts/rvm),
+                           %(cd #{deploy_directory}),
+                           %(bundle install --without development test osx)
   end
 
   def start_server server
