@@ -171,7 +171,7 @@ class Deployment
       command = %(ssh #{DEPLOY_USER}@#{server} "#{commands}")
     end
 
-    results = pretending ? command : %x[command]
+    results = pretending ? command : %x[#{command}]
     results.split("\n").each do |result|
       info("[#{server}] #{result}")
     end
