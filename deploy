@@ -5,13 +5,128 @@
 # Author: jtd
 # Created: 1/27/11
 
-APP_SERVERS = %w(eel jellyfish squid tuna)
-MIGRATION_SERVER = %w(tuna)
+GATEWAY = "deploy-gateway"
+REPO = "ors_git"
+BASE_PATH = "/var/www"
+DEPLOY_USER = "deployer"
+SERVERS = %w(eel jellyfish squid)
+MIGRATION_SERVER = "tuna"
 
 class Deployment
-  def initialize application_name, environment
-    STDERR.puts "Deploying #{application_name} #{environment}..."
+
+  attr_reader :name, :environment, :pretending
+
+  def initialize args
+    script_name = $0.gsub /^\.\//, ""
+
+    fatal "Usage: ./#{script_name} <application name> <environment> [options]" unless args.size >= 2
+    @name, @environment, *@options = *args
+    @pretending = (not (@options & ["-p", "--pretend"]).empty?)
+
+    fatal "Invalid environment: #{environment}" unless %w(production demo staging).include?(@environment.downcase)
+
+    if %w(deploy setup).include? script_name
+      send script_name
+    else
+      fatal "Executable should be named either deploy or setup, not #{script_name}"
+    end
   end
+
+  def setup
+    info "setting up #{name} #{environment}..."
+
+    (SERVERS + [MIGRATION_SERVER]).map do |server|
+      Thread.new(server) do |server|
+        setup_code server
+      end
+    end.map &:join
+
+    info "complete."
+  end
+
+  def deploy
+    info "deploying #{name} #{environment}..."
+
+    update_code MIGRATION_SERVER
+    run_migrations MIGRATION_SERVER
+
+    SERVERS.map do |server|
+      Thread.new(server) do |server|
+        update_code server
+        restart_server server
+      end
+    end.map &:join
+
+    info "complete."
+  end
+
+  protected
+
+  def setup_code server
+    info "[#{server}] installing codebase..."
+
+    remote_execute server, %(cd #{BASE_PATH}),
+                           %(rm -rf #{deploy_directory}),
+                           %(git clone #{REPO}:#{name} #{deploy_directory}),
+                           %(source ~/.rvm/scripts/rvm),
+                           %(cd #{deploy_directory}),
+                           %(rvm list),
+                           %(gem install rubygems-update),
+                           %(gem update --system),
+                           %(gem install bundler),
+                           %(bundle install --deployment --without development test osx)
+  end
+
+  def update_code server
+    info "[#{server}] updating codebase..."
+
+    remote_execute server, %(cd #{deploy_directory}),
+                           %(git fetch),
+                           %(git checkout -q -f origin/#{environment}),
+                           %(git reset --hard),
+                           %(bundle install --deployment --without development test osx)
+  end
+
+  def restart_server server
+    info "[#{server}] restarting unicorn..."
+
+#    remote_execute server, %()
+  end
+
+  def run_migrations server
+    info "[#{server}] running migrations..."
+
+    remote_execute server, %(cd #{deploy_directory}),
+                           %(RAILS_ENV=#{environment} rake db:migrate)
+  end
+
+  private
+
+  def remote_execute server, *command_array
+    commands = command_array.join " && "
+
+    if defined?(GATEWAY)
+      command = %(ssh #{GATEWAY} 'ssh #{DEPLOY_USER}@#{server} "#{commands}"')
+    else
+      command = %(ssh #{DEPLOY_USER}@#{server} "#{commands}")
+    end
+
+    pretending ? info(command) : system(command)
+  end
+
+  def deploy_directory
+    File.join BASE_PATH, name
+  end
+
+  def info message
+    STDOUT.puts message
+  end
+
+  def fatal message
+    info message
+    exit 1
+  end
+
 end
 
-Deployment.new *ARGV
+Deployment.new ARGV
