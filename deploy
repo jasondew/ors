@@ -9,8 +9,13 @@ GATEWAY = "deploy-gateway"
 REPO = "ors_git"
 BASE_PATH = "/var/www"
 DEPLOY_USER = "deployer"
-SERVERS = %w(eel jellyfish squid)
+
+WEB_SERVERS = %w(koala)
+APP_SERVERS = %w(eel jellyfish squid)
 MIGRATION_SERVER = "tuna"
+
+ALL_SERVERS = WEB_SERVERS + APP_SERVERS + [MIGRATION_SERVER]
+RUBY_SERVERS = APP_SERVERS + [MIGRATION_SERVER]
 
 class Deployment
 
@@ -25,56 +30,85 @@ class Deployment
 
     fatal "Invalid environment: #{environment}" unless %w(production demo staging).include?(@environment.downcase)
 
-    if %w(deploy setup).include? script_name
+    if %w(deploy setup update migrate start stop restart).include? script_name
       send script_name
     else
       fatal "Executable should be named either deploy or setup, not #{script_name}"
     end
   end
 
+  def start
+    info "starting #{name} #{environment}..."
+
+    execute_in_parallel(APP_SERVERS) {|server| start_server server }
+  end
+
+  def stop
+    info "stopping #{name} #{environment}..."
+
+    execute_in_parallel(APP_SERVERS) {|server| stop_server server }
+  end
+
+  def restart
+    info "restarting #{name} #{environment}..."
+
+    execute_in_parallel(APP_SERVERS) {|server| restart_server server }
+  end
+
+  def migrate
+    info "migrating #{name} #{environment}..."
+
+    run_migrations MIGRATION_SERVER
+  end
+
   def setup
     info "setting up #{name} #{environment}..."
 
-    (SERVERS + [MIGRATION_SERVER]).map do |server|
-      Thread.new(server) do |server|
-        setup_code server
-      end
-    end.map &:join
+    execute_in_parallel(ALL_SERVERS) {|server| setup_repo server }
+    execute_in_parallel(RUBY_SERVERS) {|server| setup_ruby server }
 
-    info "complete."
+    remote_execute MIGRATION_SERVER, %(source ~/.rvm/scripts/rvm),
+                                     %(cd #{deploy_directory}),
+                                     %(RAILS_ENV=#{environment} rake db:create)
   end
 
   def deploy
     info "deploying #{name} #{environment}..."
 
-    update_code MIGRATION_SERVER
-    run_migrations MIGRATION_SERVER
+    update
 
-    SERVERS.map do |server|
-      Thread.new(server) do |server|
-        update_code server
-        restart_server server
-      end
-    end.map &:join
+    migrate
 
-    info "complete."
+    restart
+  end
+
+  def update
+    info "updating #{name} #{environment}..."
+
+    execute_in_parallel(ALL_SERVERS) {|server| update_code server }
   end
 
   protected
 
-  def setup_code server
+  def setup_repo server
     info "[#{server}] installing codebase..."
 
     remote_execute server, %(cd #{BASE_PATH}),
                            %(rm -rf #{deploy_directory}),
                            %(git clone #{REPO}:#{name} #{deploy_directory}),
-                           %(source ~/.rvm/scripts/rvm),
+                           %(mkdir -p #{deploy_directory}/tmp/pids),
+                           %(mkdir -p #{deploy_directory}/log)
+  end
+
+  def setup_ruby server
+    info "[#{server}] installing ruby and gems..."
+
+    remote_execute server, %(source ~/.rvm/scripts/rvm),
                            %(cd #{deploy_directory}),
-                           %(rvm list),
                            %(gem install rubygems-update),
                            %(gem update --system),
                            %(gem install bundler),
-                           %(bundle install --deployment --without development test osx)
+                           %(bundle install --without development test osx)
   end
 
   def update_code server
@@ -84,23 +118,47 @@ class Deployment
                            %(git fetch),
                            %(git checkout -q -f origin/#{environment}),
                            %(git reset --hard),
-                           %(bundle install --deployment --without development test osx)
+                           %(bundle install --without development test osx)
+  end
+
+  def start_server server
+    info "[#{server}] starting unicorn..."
+
+    remote_execute server, %(source ~/.rvm/scripts/rvm),
+                           %(cd #{deploy_directory}),
+                           %(bundle exec unicorn -c config/unicorn.rb -D -E #{environment})
+  end
+
+  def stop_server server
+    info "[#{server}] stopping unicorn..."
+
+    remote_execute server, %(cd #{deploy_directory}),
+                           %(kill \\`cat tmp/pids/unicorn.pid\\`)
   end
 
   def restart_server server
     info "[#{server}] restarting unicorn..."
 
-#    remote_execute server, %()
+    remote_execute server, %(cd #{deploy_directory}),
+                           %(kill -USR2 \\`cat tmp/pids/unicorn.pid\\`)
   end
 
   def run_migrations server
     info "[#{server}] running migrations..."
 
     remote_execute server, %(cd #{deploy_directory}),
-                           %(RAILS_ENV=#{environment} rake db:migrate)
+                           %(RAILS_ENV=#{environment} rake db:migrate db:seed)
   end
 
   private
+
+  def execute_in_parallel servers
+    servers.map do |server|
+      Thread.new(server) do |server|
+        yield server
+      end
+    end.map &:join
+  end
 
   def remote_execute server, *command_array
     commands = command_array.join " && "
