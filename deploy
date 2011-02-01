@@ -111,7 +111,7 @@ class Deployment
                            %(gem install rubygems-update),
                            %(gem update --system),
                            %(gem install bundler),
-                           %(bundle install --without development test osx)
+                           %(bundle install --without development test osx > bundler.log)
   end
 
   def update_code server
@@ -128,7 +128,7 @@ class Deployment
 
     remote_execute server, %(source ~/.rvm/scripts/rvm),
                            %(cd #{deploy_directory}),
-                           %(bundle install --without development test osx)
+                           %(bundle install --without development test osx > bundler.log)
   end
 
   def start_server server
