@@ -157,7 +157,7 @@ class Deployment
       Thread.new(server) do |server|
         yield server
       end
-    end.map &:join
+    end.map {|thread| thread.join }
   end
 
   def remote_execute server, *command_array
