@@ -19,13 +19,14 @@ RUBY_SERVERS = APP_SERVERS + [MIGRATION_SERVER]
 
 class Deployment
 
-  attr_reader :name, :environment, :pretending
+  attr_reader :name, :environment, :pretending, :use_gateway
 
   def initialize args
     script_name = $0.gsub(/^\.\//, "").split(/\//).last
 
     fatal "Usage: ./#{script_name} <application name> <environment> [options]" unless args.size >= 2
     @name, @environment, *@options = *args
+
     @pretending = (not (@options & ["-p", "--pretend"]).empty?)
     @use_gateway = (@options & ["-ng", "--no-gateway"]).empty?
 
@@ -164,7 +165,7 @@ class Deployment
   def remote_execute server, *command_array
     commands = command_array.join " && "
 
-    if defined?(GATEWAY) && @use_gateway
+    if use_gateway
       command = %(ssh #{GATEWAY} 'ssh #{DEPLOY_USER}@#{server} "#{commands}"')
     else
       command = %(ssh #{DEPLOY_USER}@#{server} "#{commands}")
