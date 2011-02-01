@@ -27,7 +27,7 @@ class Deployment
     fatal "Usage: ./#{script_name} <application name> <environment> [options]" unless args.size >= 2
     @name, @environment, *@options = *args
     @pretending = (not (@options & ["-p", "--pretend"]).empty?)
-    @use_gateway = (not (@options & ["-ng", "--no-gateway"]).empty?)
+    @use_gateway = (@options & ["-ng", "--no-gateway"]).empty?
 
     fatal "Invalid environment: #{environment}" unless %w(production demo staging).include?(@environment.downcase)
 
