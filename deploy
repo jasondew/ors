@@ -171,7 +171,10 @@ class Deployment
       command = %(ssh #{DEPLOY_USER}@#{server} "#{commands}")
     end
 
-    pretending ? info(command) : system(command)
+    results = pretending ? command : %x[command]
+    results.split("\n").each do |result|
+      info("[#{server}] #{result}")
+    end
   end
 
   def deploy_directory
@@ -186,7 +189,6 @@ class Deployment
     info message
     exit 1
   end
-
 end
 
 Deployment.new ARGV
