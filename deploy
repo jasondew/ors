@@ -22,7 +22,7 @@ class Deployment
   attr_reader :name, :environment, :pretending
 
   def initialize args
-    script_name = $0.gsub /^\.\//, ""
+    script_name = $0.gsub(/^\.\//, "").split(/\//).last
 
     fatal "Usage: ./#{script_name} <application name> <environment> [options]" unless args.size >= 2
     @name, @environment, *@options = *args
