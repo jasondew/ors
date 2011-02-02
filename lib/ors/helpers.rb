@@ -6,7 +6,7 @@ module ORS
     def setup_repo server
       info "[#{server}] installing codebase..."
 
-      remote_execute server, %(cd #{ORS:Config.base_path}),
+      remote_execute server, %(cd #{base_path}),
                              %(rm -rf #{deploy_directory}),
                              %(git clone #{REPO}:#{name} #{deploy_directory}),
                              %(mkdir -p #{deploy_directory}/tmp/pids),
