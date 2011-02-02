@@ -10,15 +10,18 @@ module ORS
 
       def run args
         command, *options = args
-        method_name = command.to_s.downcase
+        klass = command.to_s.capitalize
 
-        # process and validate options, set up Config
-
-        if %w(help).include?(ORS::Commands.instance_methods)
-          send method_name
+        if available_commands.include? klass
+          # process and validate options, set up Config
+          Base.run ORS::Commands.const_get(klass)
         else
-          help
+          Base.run Help
         end
+      end
+
+      def available_commands
+        ORS::Commands.constants.map {|klass| klass.to_s }
       end
 
     end
