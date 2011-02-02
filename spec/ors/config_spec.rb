@@ -3,13 +3,22 @@ require File.join(File.dirname(__FILE__), %w[.. spec_helper])
 describe ORS::Config do
   before do
     class ORS::ConfigTest; include ORS::Config; end
+    class ORS::ConfigReal; include ORS::Config; end
+
     @config_test = ORS::ConfigTest.new
+    @config_real = ORS::ConfigReal.new
   end
 
-  %w(use_gateway pretending rails_2).each do |accessor|
+  %w(use_gateway pretending).each do |accessor|
     it "should allow you to set #{accessor}" do
-      ORS::Config.instance_methods.should include("#{accessor}=")
-      ORS::Config.instance_methods.should include("#{accessor}")
+      ORS::Config.should respond_to("#{accessor}")
+    end
+
+    it "should know if its #{accessor} across classes" do
+      ORS::Config.send("#{accessor}=", true)
+
+      @config_test.send(accessor).should == true
+      @config_real.send(accessor).should == true
     end
   end
 
