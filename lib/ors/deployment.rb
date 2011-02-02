@@ -24,36 +24,36 @@ class Deployment
   def start
     info "starting #{name} #{environment}..."
 
-    execute_in_parallel(APP_SERVERS) {|server| start_server server }
+    execute_in_parallel(ORS::Config.app_servers) {|server| start_server server }
   end
 
   def stop
     info "stopping #{name} #{environment}..."
 
-    execute_in_parallel(APP_SERVERS) {|server| stop_server server }
+    execute_in_parallel(ORS::Config.app_servers) {|server| stop_server server }
   end
 
   def restart
     info "restarting #{name} #{environment}..."
 
-    execute_in_parallel(APP_SERVERS) {|server| restart_server server }
+    execute_in_parallel(ORS::Config.app_servers) {|server| restart_server server }
   end
 
   def migrate
     info "migrating #{name} #{environment}..."
 
-    run_migrations MIGRATION_SERVER
+    run_migrations ORS::Config.migration_server
   end
 
   def setup
     info "setting up #{name} #{environment}..."
 
-    execute_in_parallel(ALL_SERVERS) {|server| setup_repo server }
-    execute_in_parallel(RUBY_SERVERS) {|server| setup_ruby server }
+    execute_in_parallel(ORS::Config.all_servers) {|server| setup_repo server }
+    execute_in_parallel(ORS::Config.ruby_servers) {|server| setup_ruby server }
 
-    remote_execute MIGRATION_SERVER, %(source ~/.rvm/scripts/rvm),
-                                     %(cd #{deploy_directory}),
-                                     %(RAILS_ENV=#{environment} rake db:create)
+    remote_execute ORS::Config.migration_server, %(source ~/.rvm/scripts/rvm),
+                                                 %(cd #{deploy_directory}),
+                                                 %(RAILS_ENV=#{environment} rake db:create)
   end
 
   def deploy
@@ -69,8 +69,8 @@ class Deployment
   def update
     info "updating #{name} #{environment}..."
 
-    execute_in_parallel(ALL_SERVERS) {|server| update_code server }
-    execute_in_parallel(RUBY_SERVERS) {|server| bundle_install server }
+    execute_in_parallel(ORS::Config.all_servers) {|server| update_code server }
+    execute_in_parallel(ORS::Config.ruby_servers) {|server| bundle_install server }
   end
 
   protected
@@ -78,7 +78,7 @@ class Deployment
   def setup_repo server
     info "[#{server}] installing codebase..."
 
-    remote_execute server, %(cd #{BASE_PATH}),
+    remote_execute server, %(cd #{ORS:Config.base_path}),
                            %(rm -rf #{deploy_directory}),
                            %(git clone #{REPO}:#{name} #{deploy_directory}),
                            %(mkdir -p #{deploy_directory}/tmp/pids),
@@ -153,7 +153,7 @@ class Deployment
   end
 
   def deploy_directory
-    directory = File.join BASE_PATH, name
+    directory = File.join ORS:Config.base_path, name
 
     if environment == "production"
       directory
