@@ -10,7 +10,7 @@ describe ORS::Commands::Console do
 
     it "should set pretending to true and call exec" do
       mock(subject).exec(is_a(String))
-      mock(subject).remote_execute(is_a(String), is_a(String), is_a(String)).returns("command")
+      mock(subject).remote_command(is_a(String), is_a(String), is_a(String)).returns("command")
       subject.execute
     end
   end
