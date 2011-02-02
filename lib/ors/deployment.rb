@@ -1,29 +1,10 @@
-#!/usr/bin/ruby
-
-# deploy - a script to deploy the "new" style rails websites on unicorn via git
-# Usage: ./deploy abc/growhealthy production
-# Author: jtd
-# Created: 1/27/11
-
-GATEWAY = "deploy-gateway"
-REPO = "ors_git"
-BASE_PATH = "/var/www"
-DEPLOY_USER = "deployer"
-
-WEB_SERVERS = %w(koala)
-APP_SERVERS = %w(eel jellyfish squid)
-MIGRATION_SERVER = "tuna"
-
-ALL_SERVERS = WEB_SERVERS + APP_SERVERS + [MIGRATION_SERVER]
-RUBY_SERVERS = APP_SERVERS + [MIGRATION_SERVER]
-
 class Deployment
+
+  include ORS::Utils
 
   attr_reader :name, :environment, :pretending, :use_gateway, :rails_2
 
-  def initialize args
-    script_name = $0.gsub(/^\.\//, "").split(/\//).last
-
+  def initialize script_name, args
     fatal "Usage: ./#{script_name} <application name> <environment> [options]" unless args.size >= 2
     @name, @environment, *@options = *args
 
@@ -163,28 +144,6 @@ class Deployment
 
   private
 
-  def execute_in_parallel servers
-    servers.map do |server|
-      Thread.new(server) do |server|
-        yield server
-      end
-    end.map {|thread| thread.join }
-  end
-
-  def remote_execute server, *command_array
-    commands = command_array.join " && "
-
-    if use_gateway
-      command = %(ssh #{GATEWAY} 'ssh #{DEPLOY_USER}@#{server} "#{commands}"')
-    else
-      command = %(ssh #{DEPLOY_USER}@#{server} "#{commands}")
-    end
-
-    (pretending ? command : %x[#{command}]).split("\n").each do |result|
-      info("[#{server}] #{result}")
-    end
-  end
-
   def unicorn
     if rails_2
       "unicorn_rails"
@@ -194,17 +153,13 @@ class Deployment
   end
 
   def deploy_directory
-    File.join BASE_PATH, name
+    directory = File.join BASE_PATH, name
+
+    if environment == "production"
+      directory
+    else
+      "#{directory}_#{environment}"
+    end
   end
 
-  def info message
-    STDOUT.puts message
-  end
-
-  def fatal message
-    info message
-    exit 1
-  end
 end
-
-Deployment.new ARGV
