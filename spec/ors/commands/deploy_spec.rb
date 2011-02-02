@@ -2,14 +2,16 @@ require "spec_helper"
 
 describe ORS::Commands::Deploy do
 
-  context "#run" do
+  context "#execute" do
 
     it "should call update, migrate, then restart" do
-#      mock(self).update
-#      mock(self).migrate
-#      mock(self).restart
+      mock(subject).info /deploying/
 
-#      deploy
+      mock(subject).run(ORS::Commands::Update)
+      mock(subject).run(ORS::Commands::Migrate)
+      mock(subject).run(ORS::Commands::Restart)
+
+      subject.execute
     end
 
   end

@@ -1,3 +1,3 @@
 require "ors/config"
-require "ors/utils"
+require "ors/helpers"
 require "ors/command"
