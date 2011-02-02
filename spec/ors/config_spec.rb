@@ -37,6 +37,31 @@ describe ORS::Config do
     end
   end
 
+  context ".valid_options?" do
+
+    it "should be true when there is a name and valid environment" do
+      subject.name = "foo"
+      subject.environment = "production"
+
+      ORS::Config.valid_options?.should be_true
+    end
+
+    it "should be false when there is a name but an invalid environment" do
+      subject.name = "foo"
+      subject.environment = "-p"
+
+      ORS::Config.valid_options?.should be_false
+    end
+
+    it "should be false when there is a valid environment but a blank name" do
+      subject.name = ""
+      subject.environment = "production"
+
+      ORS::Config.valid_options?.should be_false
+    end
+
+  end
+
   context "#all_servers" do
     it "should return all servers" do
       subject.all_servers.should == (subject.web_servers + subject.app_servers + [subject.migration_server])

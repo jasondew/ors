@@ -9,13 +9,20 @@ module ORS
     module ModuleMethods
 
       def parse_options options
-
         options.each do |option|
           case option
             when "-p", "--pretend" then self.pretending = true
             when "-ng", "--no-gateway" then self.use_gateway = false
           end
         end
+      end
+
+      def valid_options?
+        name.to_s.size > 0 and valid_environments.include?(environment)
+      end
+
+      def valid_environments
+        %w(production demo staging)
       end
 
     end
