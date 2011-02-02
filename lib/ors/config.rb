@@ -1,7 +1,13 @@
+require 'ors/core_ext'
+
 module ORS
   module Config
 
-    attr_accessor :use_gateway, :pretending, :rails_2
+    mattr_accessor :use_gateway, :pretending, :name, :environment
+
+    def name
+      ORS::Config.name
+    end
 
     def gateway
       "deploy-gateway"
@@ -42,5 +48,15 @@ module ORS
     def all_servers
       web_servers + app_servers + [migration_server]
     end
+
+    def deploy_directory
+      directory = File.join base_path, name
+
+      if environment == "production"
+        directory
+      else
+        "#{directory}_#{environment}"
+      end
+  end
   end
 end
