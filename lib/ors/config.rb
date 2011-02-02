@@ -3,13 +3,15 @@ module ORS
 
     mattr_accessor :use_gateway, :pretending, :name, :environment
 
+    self.environment = "production"
     self.pretending = false
     self.use_gateway = true
 
     module ModuleMethods
 
       def parse_options options
-        self.environment = options.shift unless options.first.match(/^-/)
+        self.name = name_from_git
+        self.environment = options.shift unless options.empty? or options.first.match(/^-/)
 
         options.each do |option|
           case option
@@ -25,6 +27,16 @@ module ORS
 
       def valid_environments
         %w(production demo staging)
+      end
+
+      private
+
+      def name_from_git
+        git.config["remote.origin.url"].gsub /.*?:(.*?).git/, '\1'
+      end
+
+      def git
+        @git ||= Git.open(Dir.pwd)
       end
 
     end
@@ -79,5 +91,6 @@ module ORS
         "#{directory}_#{environment}"
       end
     end
+
   end
 end
