@@ -1,45 +1,46 @@
 module ORS
-  class Config
-    class << self
-      def gateway
-        "deploy-gateway"
-      end
+  module Config
 
-      def deploy_user
-        "deployer"
-      end
+    attr_accessor :use_gateway, :pretending, :rails_2
 
-      def repo
-        "ors_git"
-      end
+    def gateway
+      "deploy-gateway"
+    end
 
-      def base_path
-        "/var/www"
-      end
+    def deploy_user
+      "deployer"
+    end
 
-      def web_servers
-        %w(koala)
-      end
+    def repo
+      "ors_git"
+    end
 
-      def app_servers
-        %w(eel jellyfish squid)
-      end
+    def base_path
+      "/var/www"
+    end
 
-      def migration_server
-        "tuna"
-      end
+    def web_servers
+      %w(koala)
+    end
 
-      def console_server
-        "tuna"
-      end
+    def app_servers
+      %w(eel jellyfish squid)
+    end
 
-      def ruby_servers
-        app_servers + [migration_server]
-      end
+    def migration_server
+      "tuna"
+    end
 
-      def all_servers
-        web_servers + app_servers + [migration_server]
-      end
+    def console_server
+      "tuna"
+    end
+
+    def ruby_servers
+      app_servers + [migration_server]
+    end
+
+    def all_servers
+      web_servers + app_servers + [migration_server]
     end
   end
 end

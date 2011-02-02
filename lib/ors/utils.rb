@@ -1,5 +1,6 @@
 module ORS
   module Utils
+    include Config
 
     def execute_in_parallel servers
       servers.map do |server|
@@ -13,9 +14,9 @@ module ORS
       commands = command_array.join " && "
 
       if use_gateway
-        command = %(ssh #{ORS::Config.gateway} 'ssh #{ORS::Config.deploy_user}@#{server} "#{commands}"')
+        command = %(ssh #{gateway} 'ssh #{deploy_user}@#{server} "#{commands}"')
       else
-        command = %(ssh #{ORS::Config.deploy_user}@#{server} "#{commands}")
+        command = %(ssh #{deploy_user}@#{server} "#{commands}")
       end
 
       (pretending ? command : %x[#{command}]).split("\n").each do |result|
