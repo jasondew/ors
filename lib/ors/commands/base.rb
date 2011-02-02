@@ -1,7 +1,5 @@
 module ORS::Commands
-
   class Base
-
     include ORS::Helpers
 
     module ClassMethods

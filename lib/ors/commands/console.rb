@@ -1,16 +1,23 @@
 module ORS::Commands
   class Console < Base
-    def run
-      # set pretending to true to get back command then exec it since
-      # we don't want this to execute remotely
-#      ORS::Config.pretending = true
-
-      exec remote_execute(console_server,
+    def execute
+      exec remote_command(console_server,
                           %(cd #{deploy_directory}),
                           %(rails console #{environment}))
     end
 
     def help
+      puts <<-END
+Usage: ./ors console [environment=production] [options]
+
+=== Environments
+Must be one of: production demo staging
+Defaults to production.
+
+=== Options
+--pretend    (or -p)   Don't execute anything, just show me what you're going to do
+--no-gateway (or -ng)  Don't use a gateway (if you're inside the firewall)
+      END
     end
   end
 end

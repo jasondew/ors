@@ -79,16 +79,20 @@ module ORS
     end
 
     def remote_execute server, *command_array
+      command = remote_command(server, *command_array)
+
+      (pretending ? command : %x[#{command}]).split("\n").each do |result|
+        info("[#{server}] #{result}")
+      end
+    end
+
+    def remote_command server, *command_array
       commands = command_array.join " && "
 
       if use_gateway
         command = %(ssh #{gateway} 'ssh #{deploy_user}@#{server} "#{commands}"')
       else
         command = %(ssh #{deploy_user}@#{server} "#{commands}")
-      end
-
-      (pretending ? command : %x[#{command}]).split("\n").each do |result|
-        info("[#{server}] #{result}")
       end
     end
 
