@@ -6,11 +6,11 @@ describe ORS::Helpers do
 
   it "should return the remote command with gateway" do
     mock(subject).use_gateway.returns(true)
-    subject.remote_command("server", %(cd /tmp)).should == %(ssh deploy-gateway 'ssh deployer@server "cd /tmp"')
+    subject.build_command("server", %(cd /tmp)).should == %(ssh deploy-gateway 'ssh deployer@server "cd /tmp"')
   end
 
   it "should return the remote command without gateway" do
     mock(subject).use_gateway.returns(false)
-    subject.remote_command("server", %(cd /tmp)).should == %(ssh deployer@server "cd /tmp")
+    subject.build_command("server", %(cd /tmp)).should == %(ssh deployer@server "cd /tmp")
   end
 end

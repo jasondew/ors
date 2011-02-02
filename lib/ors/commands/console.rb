@@ -1,9 +1,10 @@
 module ORS::Commands
   class Console < Base
     def execute
-      exec remote_command(console_server,
-                          %(cd #{deploy_directory}),
-                          %(bundle exec rails console #{environment}))
+      execute_command(console_server,
+                      true,
+                      %(cd #{deploy_directory}),
+                      %(bundle exec rails console #{environment}))
     end
 
     def help
