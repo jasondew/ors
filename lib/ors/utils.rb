@@ -1,9 +1,5 @@
 module ORS
-
   module Utils
-
-    GATEWAY = "deploy-gateway"
-    DEPLOY_USER = "deployer"
 
     def execute_in_parallel servers
       servers.map do |server|
@@ -17,9 +13,9 @@ module ORS
       commands = command_array.join " && "
 
       if use_gateway
-        command = %(ssh #{GATEWAY} 'ssh #{DEPLOY_USER}@#{server} "#{commands}"')
+        command = %(ssh #{ORS::Config.gateway} 'ssh #{ORS::Config.deploy_user}@#{server} "#{commands}"')
       else
-        command = %(ssh #{DEPLOY_USER}@#{server} "#{commands}")
+        command = %(ssh #{ORS::Config.deploy_user}@#{server} "#{commands}")
       end
 
       (pretending ? command : %x[#{command}]).split("\n").each do |result|
@@ -36,5 +32,4 @@ module ORS
       exit 1
     end
   end
-
 end
