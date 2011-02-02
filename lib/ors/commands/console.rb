@@ -6,6 +6,7 @@ module ORS::Commands
       ORS::Config.pretending = true
       ORS::Config.name = 'abc/growhealthy'
       ORS::Config.environment = 'production'
+      ORS::Config.use_gateway = true
 
       exec remote_execute(console_server,
                           %(cd #{deploy_directory}),
