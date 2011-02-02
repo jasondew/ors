@@ -23,8 +23,8 @@ Must be one of: production demo staging
 Defaults to production.
 
 === Options
---pretend    (or -p)   Don't execute anything, just show me what you're going to do
---no-gateway (or -ng)  Don't use a gateway (if you're inside the firewall)
+--pretend    (or -p)   Don't execute anything, just show me what you're going to do (default: false)
+--no-gateway (or -ng)  Don't use a gateway (if you're inside the firewall)          (default: true)
       END
     end
 

@@ -1,28 +1,43 @@
-require File.join(File.dirname(__FILE__), %w[.. spec_helper])
+require "spec_helper"
 
 describe ORS::Config do
-  before do
-    class ORS::ConfigTest; include ORS::Config; end
-    class ORS::ConfigReal; include ORS::Config; end
 
-    @config_test = ORS::ConfigTest.new
-    @config_real = ORS::ConfigReal.new
-  end
+  subject { class ORS::ConfigTest; include ORS::Config; end; ORS::ConfigTest.new }
 
-  %w(use_gateway pretending).each do |accessor|
-    it "should allow you to set #{accessor}" do
-      ORS::Config.should respond_to("#{accessor}")
+  context "config permanence" do
+    before do
+      class ORS::OtherConfig; include ORS::Config; end
+      @other_config = ORS::OtherConfig.new
     end
 
-    it "should know if its #{accessor} across classes" do
-      ORS::Config.send("#{accessor}=", true)
+    %w(use_gateway pretending).each do |accessor|
+      it "should allow you to set #{accessor}" do
+        ORS::Config.should respond_to("#{accessor}")
+      end
 
-      @config_test.send(accessor).should == true
-      @config_real.send(accessor).should == true
+      it "should know if its #{accessor} across classes" do
+        ORS::Config.send("#{accessor}=", true)
+
+        subject.send(accessor).should == true
+        @other_config.send(accessor).should == true
+      end
     end
   end
 
-  it "should return all servers" do
-    @config_test.all_servers.should == (@config_test.web_servers + @config_test.app_servers + [@config_test.migration_server])
+  context ".parse_options" do
+    it "should default pretend to false" do
+      subject.pretending.should be_false
+    end
+
+    it "should default use_gateway to true" do
+      subject.use_gateway.should be_true
+    end
   end
+
+  context "#all_servers" do
+    it "should return all servers" do
+      subject.all_servers.should == (subject.web_servers + subject.app_servers + [subject.migration_server])
+    end
+  end
+
 end
