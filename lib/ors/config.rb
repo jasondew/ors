@@ -9,6 +9,8 @@ module ORS
     module ModuleMethods
 
       def parse_options options
+        self.environment = options.shift unless options.first.match(/^-/)
+
         options.each do |option|
           case option
             when "-p", "--pretend" then self.pretending = true

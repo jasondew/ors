@@ -8,6 +8,11 @@ describe ORS::Config do
     it("should default pretend to false") { subject.pretending.should be_false }
     it("should default use_gateway to true") { subject.use_gateway.should be_true }
 
+    it "should set the environment when it is given" do
+      ORS::Config.parse_options %w(foobar -p)
+      subject.environment.should == "foobar"
+    end
+
     it "should set pretend to true if -p is given" do
       ORS::Config.pretending = false
       ORS::Config.parse_options %w(-p)
