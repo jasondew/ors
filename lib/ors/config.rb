@@ -5,9 +5,23 @@ module ORS
 
     mattr_accessor :use_gateway, :pretending, :name, :environment
 
-    def name
-      ORS::Config.name
+    self.pretending = false
+    self.use_gateway = true
+
+    module ModuleMethods
+
+      def parse_options options
+
+        options.each do |option|
+          case option
+            when "-p", "--pretend" then self.pretending = true
+            when "-ng", "--no-gateway" then self.use_gateway = false
+          end
+        end
+      end
+
     end
+    extend ModuleMethods
 
     def gateway
       "deploy-gateway"
@@ -57,6 +71,6 @@ module ORS
       else
         "#{directory}_#{environment}"
       end
-  end
+    end
   end
 end

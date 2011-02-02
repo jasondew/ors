@@ -16,6 +16,7 @@ module ORS
         if available_commands.include? klass
           ORS::Config.name = name_from_git
           ORS::Config.environment = "production" #FIXME: this should be configurable
+          ORS::Config.parse_options options
 
           #FIXME: validate options!
 
