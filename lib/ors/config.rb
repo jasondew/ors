@@ -1,5 +1,8 @@
 module ORS
   module Config
+
+    attr_accessor :use_gateway, :pretending, :rails_2
+
     def gateway
       "deploy-gateway"
     end
