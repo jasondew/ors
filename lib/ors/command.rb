@@ -18,9 +18,11 @@ module ORS
           ORS::Config.environment = "production" #FIXME: this should be configurable
           ORS::Config.parse_options options
 
-          #FIXME: validate options!
-
-          Base.run ORS::Commands.const_get(klass)
+          if ORS::Config.valid_options?
+            Base.run ORS::Commands.const_get(klass)
+          else
+            Base.run Help
+          end
         else
           Base.run Help
         end

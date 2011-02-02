@@ -8,6 +8,11 @@ describe ORS::Config do
     it("should default pretend to false") { subject.pretending.should be_false }
     it("should default use_gateway to true") { subject.use_gateway.should be_true }
 
+    it "should set the environment when it is given" do
+      ORS::Config.parse_options %w(foobar -p)
+      subject.environment.should == "foobar"
+    end
+
     it "should set pretend to true if -p is given" do
       ORS::Config.pretending = false
       ORS::Config.parse_options %w(-p)
@@ -35,6 +40,31 @@ describe ORS::Config do
 
       subject.use_gateway.should be_false
     end
+  end
+
+  context ".valid_options?" do
+
+    it "should be true when there is a name and valid environment" do
+      subject.name = "foo"
+      subject.environment = "production"
+
+      ORS::Config.valid_options?.should be_true
+    end
+
+    it "should be false when there is a name but an invalid environment" do
+      subject.name = "foo"
+      subject.environment = "-p"
+
+      ORS::Config.valid_options?.should be_false
+    end
+
+    it "should be false when there is a valid environment but a blank name" do
+      subject.name = ""
+      subject.environment = "production"
+
+      ORS::Config.valid_options?.should be_false
+    end
+
   end
 
   context "#all_servers" do
