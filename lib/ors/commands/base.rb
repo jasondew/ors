@@ -2,7 +2,7 @@ module ORS::Commands
 
   class Base
 
-    include ORS::Config
+    include ORS::Utils
 
     module ClassMethods
       def run klass

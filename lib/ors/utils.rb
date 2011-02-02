@@ -22,6 +22,8 @@ module ORS
       (pretending ? command : %x[#{command}]).split("\n").each do |result|
         info("[#{server}] #{result}")
       end
+
+      command
     end
 
     def info message
