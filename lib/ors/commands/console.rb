@@ -3,6 +3,7 @@ module ORS::Commands
     def execute
       execute_command(console_server,
                       true,
+                      %(source ~/.rvm/scripts/rvm),
                       %(cd #{deploy_directory}),
                       %(bundle exec rails console #{environment}))
     end

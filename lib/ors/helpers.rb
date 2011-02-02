@@ -45,8 +45,8 @@ module ORS
       info "[#{server}] starting unicorn..."
 
       execute_command server, %(source ~/.rvm/scripts/rvm),
-                             %(cd #{deploy_directory}),
-                             %(bundle exec #{unicorn} -c config/unicorn.rb -D -E #{environment})
+                              %(cd #{deploy_directory}),
+                              %(bundle exec #{unicorn} -c config/unicorn.rb -D -E #{environment})
     end
 
     def stop_server server
