@@ -82,7 +82,7 @@ module ORS
       command = remote_command(server, *command_array)
 
       (pretending ? command : %x[#{command}]).split("\n").each do |result|
-        info("[#{server}] #{result}")
+        info "[#{server}] #{result}"
       end
     end
 
