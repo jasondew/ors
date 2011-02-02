@@ -3,7 +3,7 @@ module ORS::Commands
     def execute
       exec remote_command(console_server,
                           %(cd #{deploy_directory}),
-                          %(rails console #{environment}))
+                          %(bundle exec rails console #{environment}))
     end
 
     def help
