@@ -14,8 +14,6 @@ module ORS
         klass = command.to_s.capitalize
 
         if available_commands.include? klass
-          ORS::Config.name = name_from_git
-          ORS::Config.environment = "production" #FIXME: this should be configurable
           ORS::Config.parse_options options
 
           if ORS::Config.valid_options?
@@ -32,14 +30,6 @@ module ORS
 
       def available_commands
         ORS::Commands.constants.map {|klass| klass.to_s }
-      end
-
-      def name_from_git
-        git.config["remote.origin.url"].gsub /.*?:(.*?).git/, '\1'
-      end
-
-      def git
-        @git ||= Git.open(Dir.pwd)
       end
 
     end
