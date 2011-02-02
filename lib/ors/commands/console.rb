@@ -2,10 +2,10 @@ module ORS::Commands
   class Console < Base
     def execute
       execute_command(console_server,
-                      true,
                       %(source ~/.rvm/scripts/rvm),
                       %(cd #{deploy_directory}),
-                      %(bundle exec rails console #{environment}))
+                      %(bundle exec rails console #{environment}),
+                      :exec => true)
     end
 
     def help
