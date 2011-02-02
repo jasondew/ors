@@ -1,6 +1,6 @@
 module ORS::Commands
   class Console < Base
-    def run
+    def execute
       # set pretending to true to get back command then exec it since
       # we don't want this to execute remotely
       ORS::Config.pretending = true
