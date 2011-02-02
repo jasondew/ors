@@ -2,12 +2,54 @@ require "spec_helper"
 
 describe ORS::Config do
 
-  subject { class ORS::ConfigTest; include ORS::Config; end; ORS::ConfigTest.new }
+  subject { class Foo; include ORS::Config; end; Foo.new }
+
+  context ".parse_options" do
+    it("should default pretend to false") { subject.pretending.should be_false }
+    it("should default use_gateway to true") { subject.use_gateway.should be_true }
+
+    it "should set pretend to true if -p is given" do
+      ORS::Config.pretending = false
+      ORS::Config.parse_options %w(-p)
+
+      subject.pretending.should be_true
+    end
+
+    it "should set pretend to true if --pretend is given" do
+      ORS::Config.pretending = false
+      ORS::Config.parse_options %w(--pretend)
+
+      subject.pretending.should be_true
+    end
+
+    it "should set use_gateway to false if -ng is given" do
+      ORS::Config.use_gateway = true
+      ORS::Config.parse_options %w(-ng)
+
+      subject.use_gateway.should be_false
+    end
+
+    it "should set use_gateway to false if --no-gateway is given" do
+      ORS::Config.use_gateway = true
+      ORS::Config.parse_options %w(--no-gateway)
+
+      subject.use_gateway.should be_false
+    end
+  end
+
+  context "#all_servers" do
+    it "should return all servers" do
+      subject.all_servers.should == (subject.web_servers + subject.app_servers + [subject.migration_server])
+    end
+  end
 
   context "config permanence" do
     before do
       class ORS::OtherConfig; include ORS::Config; end
       @other_config = ORS::OtherConfig.new
+
+      class ORS::ConfigTest; include ORS::Config; end
+      @some_config = ORS::ConfigTest.new
     end
 
     %w(use_gateway pretending).each do |accessor|
@@ -18,25 +60,9 @@ describe ORS::Config do
       it "should know if its #{accessor} across classes" do
         ORS::Config.send("#{accessor}=", true)
 
-        subject.send(accessor).should == true
+        @some_config.send(accessor).should == true
         @other_config.send(accessor).should == true
       end
-    end
-  end
-
-  context ".parse_options" do
-    it "should default pretend to false" do
-      subject.pretending.should be_false
-    end
-
-    it "should default use_gateway to true" do
-      subject.use_gateway.should be_true
-    end
-  end
-
-  context "#all_servers" do
-    it "should return all servers" do
-      subject.all_servers.should == (subject.web_servers + subject.app_servers + [subject.migration_server])
     end
   end
 
