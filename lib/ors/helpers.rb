@@ -78,36 +78,38 @@ module ORS
       end.map {|thread| thread.join }
     end
 
-    def execute_command server, *options
-      exec_command, command_array = if options.first.is_a?(String)
-                                      [false, options]
-                                    else
-                                      [options.shift, options]
-                                    end
+    # options = {:exec => ?, :capture => ?}
+    def execute_command server, *command_array
+      options = {:exec => false, :capture => false}.merge(command_array.pop) if command_array.last.is_a?(Hash)
 
-      command = build_command(server, command_array)
-
+      command = build_command(server, command_array, options)
 
       if pretending
         info("[#{server}] #{command}")
       else
-        if exec_command
+        if options[:exec]
           exec command
         else
-          %x[#{command}].split("\n").each do |result|
-            info("[#{server}] #{result}")
+          results = %x[#{command}]
+          if options[:capture]
+            return results
+          else
+            results.split("\n").each do |result|
+              info("[#{server}] #{result}")
+            end
           end
         end
       end
     end
 
-    def build_command server, *command_array
+    def build_command server, command_array, options
       commands = command_array.join " && "
+      psuedo_tty = options[:exec] ? '-t ' : ''
 
       if use_gateway
-        %(ssh #{gateway} 'ssh #{deploy_user}@#{server} "#{commands}"')
+        %(ssh #{psuedo_tty}#{gateway} 'ssh #{psuedo_tty}#{deploy_user}@#{server} "#{commands}"')
       else
-        %(ssh #{deploy_user}@#{server} "#{commands}")
+        %(ssh #{psuedo_tty}#{deploy_user}@#{server} "#{commands}")
       end
     end
 
