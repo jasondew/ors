@@ -3,10 +3,13 @@ module ORS::Commands
 
     def execute
       all_logs = app_servers.map do |server|
-        logs = execute_command server,
-                               %(cd #{deploy_directory}),
-                               %(tail -500 log/#{environment}.log),
-                               :capture => true
+        [
+         server,
+         execute_command(server,
+                         %(cd #{deploy_directory}),
+                         %(tail -500 log/#{environment}.log),
+                         :capture => true)
+        ]
       end
 
       puts ORS::LogUnifier.new(all_logs).unify
