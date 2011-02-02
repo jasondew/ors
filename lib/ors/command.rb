@@ -1,4 +1,3 @@
-Dir[File.join File.dirname(__FILE__), "commands", "*.rb"].each { |c| puts c }
 Dir[File.join File.dirname(__FILE__), "commands", "*.rb"].each { |c| require c }
 
 module ORS
@@ -13,9 +12,9 @@ module ORS
         command, *options = args
         method_name = command.to_s.downcase
 
-        # process options, sets up Config
+        # process and validate options, set up Config
 
-        if %w(help).include?(method_name)
+        if %w(help).include?(ORS::Commands.instance_methods)
           send method_name
         else
           help

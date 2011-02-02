@@ -1,14 +1,12 @@
 require "spec_helper"
 
-describe ORS::Commands do
+describe ORS::Commands::Help do
 
-  before { extend ORS::Commands }
-
-  context "#help" do
+  context "#run" do
 
     it "should display the help documentation" do
-      mock(self).puts is_a(String)
-      help
+      mock(subject).puts is_a(String)
+      subject.execute
     end
 
   end
