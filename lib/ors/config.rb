@@ -1,5 +1,3 @@
-require 'ors/core_ext'
-
 module ORS
   module Config
 
