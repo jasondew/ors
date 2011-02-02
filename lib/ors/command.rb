@@ -1,4 +1,4 @@
-require 'ors/commands/base'
+require "ors/commands/base"
 Dir[File.join File.dirname(__FILE__), "commands", "*.rb"].each { |c| require c }
 
 module ORS
