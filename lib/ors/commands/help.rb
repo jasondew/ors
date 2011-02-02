@@ -1,7 +1,8 @@
-module ORS
-  module Commands
+module ORS::Commands
 
-    def help
+  class Help < Base
+
+    def execute
       puts <<-END
 Usage: ./ors <action> [environment=production] [options]
 
@@ -12,6 +13,7 @@ logs          Show the last few log entries from the production servers
 deploy        Update the code, run the migrations, and restart unicorn
 setup         Sets up the default environment on the servers
 update        Updates the code on all servers
+migrate       Runs the migrations on the migration server
 start         Starts up unicorn on the app servers
 stop          Stops unicorn on the app servers
 restart       Retarts unicorn on the app servers
