@@ -1,11 +1,12 @@
 module ORS
   module Config
 
-    mattr_accessor :use_gateway, :pretending, :name, :environment
+    mattr_accessor :name, :environment, :use_gateway, :pretending, :log_lines
 
     self.environment = "production"
     self.pretending = false
     self.use_gateway = true
+    self.log_lines = 100
 
     module ModuleMethods
 

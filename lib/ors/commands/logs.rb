@@ -7,12 +7,12 @@ module ORS::Commands
          server,
          execute_command(server,
                          %(cd #{deploy_directory}),
-                         %(tail -500 log/#{environment}.log),
+                         %(tail -n #{log_lines} log/#{environment}.log),
                          :capture => true)
         ]
       end
 
-      puts ORS::LogUnifier.new(all_logs).unify
+      puts ORS::LogUnifier.new(all_logs).unify unless pretending
     end
 
   end

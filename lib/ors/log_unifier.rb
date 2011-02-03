@@ -43,7 +43,7 @@ module ORS
             end
           else
             if entry[:lines].empty?
-              entry[:timestamp] = line.gsub(/^Started.*?(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}).*$/, '\1').gsub(/\D/, '')
+              entry[:timestamp] = line.gsub(/^(?:Processing|Started).*?(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}).*$/, '\1').gsub(/\D/, '')
             end
 
             entry[:lines] << line
