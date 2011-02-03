@@ -6,12 +6,36 @@ module ORS
     context "#unify" do
 
       it "should return the logs if there is only one server" do
-        unifier = LogUnifier.new [["server", %(log line 1\nlog line 2\netc)]]
-        unifier.unify.should == %([server] log line 1\n[server] log line 2\n[server] etc)
+        logs = <<-END
+Started GET "/" for 10.203.228.96 at 2011-02-02 08:48:33 -0500
+  Processing by ReviewsController#index as HTML
+Completed 200 OK in 41ms (Views: 3.6ms | ActiveRecord: 31.6ms)
+
+
+Started GET "/" for 10.203.228.96 at 2011-02-02 08:48:33 -0500
+  Processing by ReviewsController#index as HTML
+Completed 200 OK in 41ms (Views: 3.6ms | ActiveRecord: 31.6ms)
+        END
+
+        logs_with_server = <<-END
+[server] Started GET "/" for 10.203.228.96 at 2011-02-02 08:48:33 -0500
+[server]   Processing by ReviewsController#index as HTML
+[server] Completed 200 OK in 41ms (Views: 3.6ms | ActiveRecord: 31.6ms)
+
+
+[server] Started GET "/" for 10.203.228.96 at 2011-02-02 08:48:33 -0500
+[server]   Processing by ReviewsController#index as HTML
+[server] Completed 200 OK in 41ms (Views: 3.6ms | ActiveRecord: 31.6ms)
+        END
+
+        unifier = LogUnifier.new [["server", logs]]
+        unifier.unify.should == logs_with_server.chomp
       end
 
       it "should intertwine log entires by date if there are multiple servers" do
         server_1_logs = <<-END
+Completed 200 OK in 41ms (Views: 3.6ms | ActiveRecord: 31.6ms)
+
 Started GET "/" for 10.203.228.96 at 2011-02-02 08:48:33 -0500
   Processing by ReviewsController#index as HTML
 Completed 200 OK in 41ms (Views: 3.6ms | ActiveRecord: 31.6ms)
@@ -23,6 +47,9 @@ Completed 200 OK in 41ms (Views: 3.6ms | ActiveRecord: 31.6ms)
         END
 
         server_2_logs = <<-END
+  Processing by ReviewsController#index as HTML
+Completed 200 OK in 41ms (Views: 3.6ms | ActiveRecord: 31.6ms)
+
 Started GET "/" for 10.203.228.96 at 2011-02-02 08:49:33 -0500
   Processing by ReviewsController#index as HTML
 Completed 200 OK in 41ms (Views: 3.6ms | ActiveRecord: 31.6ms)
