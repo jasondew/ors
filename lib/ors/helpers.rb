@@ -80,7 +80,8 @@ module ORS
 
     # options = {:exec => ?, :capture => ?}
     def execute_command server, *command_array
-      options = {:exec => false, :capture => false}.merge(command_array.pop) if command_array.last.is_a?(Hash)
+      options = {:exec => false, :capture => false}
+      options.merge!(command_array.pop) if command_array.last.is_a?(Hash)
 
       command = build_command(server, command_array, options)
 
@@ -90,7 +91,7 @@ module ORS
         if options[:exec]
           exec command
         else
-          results = %x[#{command}]
+          results = `#{command}`
           if options[:capture]
             return results
           else
