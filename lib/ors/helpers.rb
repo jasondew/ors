@@ -53,21 +53,21 @@ module ORS
       info "[#{server}] stopping unicorn..."
 
       execute_command server, %(cd #{deploy_directory}),
-                             %(kill \\`cat tmp/pids/unicorn.pid\\`)
+                              %(kill \\`cat tmp/pids/unicorn.pid\\`)
     end
 
     def restart_server server
       info "[#{server}] restarting unicorn..."
 
       execute_command server, %(cd #{deploy_directory}),
-                             %(kill -USR2 \\`cat tmp/pids/unicorn.pid\\`)
+                              %(kill -USR2 \\`cat tmp/pids/unicorn.pid\\`)
     end
 
     def run_migrations server
       info "[#{server}] running migrations..."
 
       execute_command server, %(cd #{deploy_directory}),
-                             %(RAILS_ENV=#{environment} rake db:migrate db:seed)
+                              %(RAILS_ENV=#{environment} rake db:migrate db:seed)
     end
 
     def execute_in_parallel servers
@@ -102,7 +102,17 @@ module ORS
       end
     end
 
-    def build_command server, command_array, options
+    def build_command server, *commands_and_maybe_options
+      return "" if commands_and_maybe_options.empty?
+
+      if commands_and_maybe_options.last.is_a?(Hash)
+        options = commands_and_maybe_options.pop
+        command_array = commands_and_maybe_options
+      else
+        command_array = commands_and_maybe_options
+        options = {}
+      end
+
       commands = command_array.join " && "
       psuedo_tty = options[:exec] ? '-t ' : ''
 
