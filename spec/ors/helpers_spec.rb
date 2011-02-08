@@ -6,6 +6,7 @@ describe ORS::Helpers do
 
   context "#execute_command" do
     before do
+      stub(subject).pretending  { false }
       stub(subject).info(is_a(String)).returns "message"
       stub(subject).build_command.returns "command"
       stub(subject).`(is_a(String)) {'output'} # ` # syntax highlighting
