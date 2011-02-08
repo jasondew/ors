@@ -5,7 +5,6 @@ module ORS::Commands
     def execute
       info "migrating #{name} #{environment}..."
 
-      bundle_install migration_server
       run_migrations migration_server
     end
 

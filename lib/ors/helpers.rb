@@ -37,8 +37,8 @@ module ORS
       info "[#{server}] installing bundle..."
 
       execute_command server, %(source ~/.rvm/scripts/rvm),
-                             %(cd #{deploy_directory}),
-                             %(bundle install --without development test osx > bundler.log)
+                              %(cd #{deploy_directory}),
+                              %(bundle install --without development test osx > bundler.log)
     end
 
     def start_server server
@@ -66,7 +66,8 @@ module ORS
     def run_migrations server
       info "[#{server}] running migrations..."
 
-      execute_command server, %(cd #{deploy_directory}),
+      execute_command server, %(source ~/.rvm/scripts/rvm),
+                              %(cd #{deploy_directory}),
                               %(RAILS_ENV=#{environment} bundle exec rake db:migrate db:seed)
     end
 
