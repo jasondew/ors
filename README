@@ -1,5 +1,8 @@
 == Set Up
 
+* Set up repo on eden
+
+
 Required Files:
 * .rvmrc
 * Gemfile
@@ -7,7 +10,6 @@ Required Files:
 * config/database.yml
 * .git/config
 * config/unicorn.rb
-
 
 === Setting Up GitConfig
 
@@ -32,7 +34,8 @@ On your ruby servers you should create a .rvmrc in the home directory of the use
 * rake
 * bundler
 
-==== Gemfile
+
+Gemfile
 
     group :production, :demo do
       gem 'unicorn'
