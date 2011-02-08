@@ -10,7 +10,7 @@ module ORS::Commands
 
       execute_command migration_server, %(source ~/.rvm/scripts/rvm),
                                         %(cd #{deploy_directory}),
-                                        %(RAILS_ENV=#{environment} rake db:create)
+                                        %(RAILS_ENV=#{environment} bundle exec rake db:create)
     end
 
   end

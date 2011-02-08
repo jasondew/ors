@@ -67,7 +67,7 @@ module ORS
       info "[#{server}] running migrations..."
 
       execute_command server, %(cd #{deploy_directory}),
-                              %(RAILS_ENV=#{environment} rake db:migrate db:seed)
+                              %(RAILS_ENV=#{environment} bundle exec rake db:migrate db:seed)
     end
 
     def execute_in_parallel servers
