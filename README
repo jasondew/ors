@@ -8,6 +8,7 @@ Required Files:
 * .git/config
 * config/unicorn.rb
 
+
 === Setting Up GitConfig
 
     [remote "production"]
@@ -16,6 +17,28 @@ Required Files:
 
     >> git push production # updates remote production branch without local branch
 
+
+=== Setting up RVM
+
+On your ruby servers you should create a .rvmrc in the home directory of the user running unicorn.
+
+    rvm_install_on_use_flag=1
+    rvm_gemset_create_on_use_flag=1
+    rvm_trust_rvmrcs_flag=1
+
+
+=== Require gems in Gemfile
+
+    group :production, :demo do
+      gem 'unicorn'
+      gem 'mysql2'
+      gem 'dalli'
+      gem 'exception_notification', :git => "git://github.com/rails/exception_notification", :branch => "master", :require => "exception_notifier"
+    end
+
+
+
+=== Usage
 
 
 Usage: ./ors <action> [environment=production] [options]
