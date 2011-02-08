@@ -33,24 +33,12 @@ module ORS
       entries = Array.new
 
       logs.each do |server, log_rows|
-        entry = {:lines => Array.new, :server => server}
+        log_rows.split(/\n\n\n/).each do |line|
+          line.gsub!(/^.*?Started/m, "Started") unless line =~ /\AStarted/
+          timestamp, _ = line.scan(/^(?:Processing|Started).*?(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}).*$/).first
 
-        log_rows.split(/\n/).each do |line|
-          if line == ""
-            unless entry[:lines].empty?
-              entries << entry
-              entry = {:lines => Array.new, :server => server}
-            end
-          else
-            if entry[:lines].empty?
-              entry[:timestamp] = line.gsub(/^(?:Processing|Started).*?(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}).*$/, '\1').gsub(/\D/, '')
-            end
-
-            entry[:lines] << line
-          end
+          entries << {:timestamp => timestamp.gsub(/\D/, ""), :lines => line.split(/\n/), :server => server} if timestamp
         end
-
-        entries << entry
       end
 
       entries

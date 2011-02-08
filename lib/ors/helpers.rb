@@ -46,7 +46,7 @@ module ORS
 
       execute_command server, %(source ~/.rvm/scripts/rvm),
                               %(cd #{deploy_directory}),
-                              %(bundle exec #{unicorn} -c config/unicorn.rb -D -E #{environment})
+                              %(if [ -f config.ru ]; then RAILS_ENV=#{environment} bundle exec unicorn -c config/unicorn.rb -D -E #{environment}; else RAILS_ENV=#{environment} bundle exec unicorn_rails -c config/unicorn.rb -D -E #{environment}; fi)
     end
 
     def stop_server server

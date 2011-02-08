@@ -41,20 +41,6 @@ describe ORS::Config do
 
       subject.use_gateway.should be_false
     end
-
-    it "should set rails2 to true if -r2 is given" do
-      ORS::Config.rails2 = false
-      ORS::Config.parse_options %w(-r2)
-
-      subject.rails2.should be_true
-    end
-
-    it "should set rails2 to true if --rails-2 is given" do
-      ORS::Config.rails2 = false
-      ORS::Config.parse_options %w(--rails-2)
-
-      subject.rails2.should be_true
-    end
   end
 
   context ".valid_options?" do
