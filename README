@@ -1,3 +1,23 @@
+== Set Up
+
+Required Files:
+* .rvmrc
+* Gemfile
+* Gemfile.lock
+* config/database.yml
+* .git/config
+* config/unicorn.rb
+
+=== Setting Up GitConfig
+
+    [remote "production"]
+      url = git@eden:ors/deployment.git
+      push = refs/heads/master:refs/heads/production
+
+    >> git push production # updates remote production branch without local branch
+
+
+
 Usage: ./ors <action> [environment=production] [options]
 
 === Actions
