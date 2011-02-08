@@ -25,6 +25,7 @@ Defaults to production.
 === Options
 --pretend    (or -p)   Don't execute anything, just show me what you're going to do (default: false)
 --no-gateway (or -ng)  Don't use a gateway (if you're inside the firewall)          (default: true)
+--rails-2    (or -r2)  Rails 2 application (use unicorn_rails instead of unicorn)
       END
     end
 

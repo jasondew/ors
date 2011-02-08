@@ -1,12 +1,13 @@
 module ORS
   module Config
 
-    mattr_accessor :name, :environment, :use_gateway, :pretending, :log_lines
+    mattr_accessor :name, :environment, :use_gateway, :pretending, :log_lines, :rails2
 
     self.environment = "production"
     self.pretending = false
     self.use_gateway = true
     self.log_lines = 100
+    self.rails2 = false
 
     module ModuleMethods
 
@@ -18,6 +19,7 @@ module ORS
           case option
             when "-p", "--pretend" then self.pretending = true
             when "-ng", "--no-gateway" then self.use_gateway = false
+            when "-r2", "--rails-2" then self.rails2 = true
           end
         end
       end
@@ -42,6 +44,10 @@ module ORS
 
     end
     extend ModuleMethods
+
+    def unicorn
+      rails2 ? "unicorn-rails" : "unicorn"
+    end
 
     def gateway
       "deploy-gateway"
