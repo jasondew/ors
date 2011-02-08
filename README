@@ -27,7 +27,12 @@ On your ruby servers you should create a .rvmrc in the home directory of the use
     rvm_trust_rvmrcs_flag=1
 
 
-=== Require gems in Gemfile
+=== Required gems
+
+* rake
+* bundler
+
+==== Gemfile
 
     group :production, :demo do
       gem 'unicorn'
