@@ -8,7 +8,7 @@ module ORS
 
       execute_command server, %(cd #{base_path}),
                              %(rm -rf #{deploy_directory}),
-                             %(git clone #{REPO}:#{name} #{deploy_directory}),
+                             %(git clone #{repo}:#{name} #{deploy_directory}),
                              %(mkdir -p #{deploy_directory}/tmp/pids),
                              %(mkdir -p #{deploy_directory}/log)
     end
