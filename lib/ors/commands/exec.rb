@@ -7,7 +7,7 @@ module ORS::Commands
 
       execute_command migration_server, %(source ~/.rvm/scripts/rvm),
                                         %(cd #{deploy_directory}),
-                                        %(bundle exec #{ENV["COMMAND"]})
+                                        %(bundle exec #{ENV["CMD"]})
     end
 
   end
