@@ -10,6 +10,7 @@ Usage: ./ors <action> [environment=production] [options]
 help          You're looking at it
 console       Bring up a console on the production servers
 logs          Show the last few log entries from the production servers
+exec          Executes a command (via the COMMAND environment variable) on the migration server
 deploy        Update the code, run the migrations, and restart unicorn
 setup         Sets up the default environment on the servers
 update        Updates the code on all servers

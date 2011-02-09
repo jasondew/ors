@@ -21,7 +21,7 @@ module ORS
                              %(gem install rubygems-update),
                              %(gem update --system),
                              %(gem install bundler),
-                             %(bundle install --without development test osx > bundler.log)
+                             %(bundle install --without development test osx_development > bundler.log)
     end
 
     def update_code server
@@ -38,7 +38,7 @@ module ORS
 
       execute_command server, %(source ~/.rvm/scripts/rvm),
                               %(cd #{deploy_directory}),
-                              %(bundle install --without development test osx > bundler.log)
+                              %(bundle install --without development test osx_development > bundler.log)
     end
 
     def start_server server
