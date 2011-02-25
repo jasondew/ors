@@ -8,6 +8,7 @@ Usage: ./ors <action> [environment=production] [options]
 
 === Actions
 help          You're looking at it
+env           Print out the configuration
 console       Bring up a console on the production servers
 logs          Show the last few log entries from the production servers
 exec          Executes a command (via the CMD environment variable) on the migration server

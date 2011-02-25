@@ -15,6 +15,7 @@ module ORS
 
         if available_commands.include? klass
           ORS::Config.parse_options options
+          ORS::Config.parse_config_file
 
           if ORS::Config.valid_options?
             Base.run ORS::Commands.const_get(klass)

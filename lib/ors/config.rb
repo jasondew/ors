@@ -1,7 +1,10 @@
 module ORS
   module Config
 
+    CONFIG_FILENAME="config/deploy.yml"
+
     mattr_accessor :name, :environment, :use_gateway, :pretending, :log_lines, :rails2
+    mattr_accessor :gateway, :deploy_user, :repo, :base_path, :web_servers, :app_servers, :migration_server, :console_server
 
     self.environment = "production"
     self.pretending = false
@@ -19,6 +22,21 @@ module ORS
             when "-p", "--pretend" then self.pretending = true
             when "-ng", "--no-gateway" then self.use_gateway = false
           end
+        end
+      end
+
+      def parse_config_file
+        if File.exists?(CONFIG_FILENAME)
+          YAML.load(File.read(CONFIG_FILENAME)).each {|(name, value)| send "#{name}=", value }
+        else
+          self.gateway          = "deploy-gateway"
+          self.deploy_user      = "deployer"
+          self.repo             = "ors_git"
+          self.base_path        = "/var/www"
+          self.web_servers      = %w(koala)
+          self.app_servers      = %w(eel jellyfish squid)
+          self.migration_server = "tuna"
+          self.console_server   = "tuna"
         end
       end
 
@@ -43,44 +61,12 @@ module ORS
     end
     extend ModuleMethods
 
-    def gateway
-      "deploy-gateway"
-    end
-
-    def deploy_user
-      "deployer"
-    end
-
-    def repo
-      "ors_git"
-    end
-
-    def base_path
-      "/var/www"
-    end
-
-    def web_servers
-      %w(koala)
-    end
-
-    def app_servers
-      %w(eel jellyfish squid)
-    end
-
-    def migration_server
-      "tuna"
-    end
-
-    def console_server
-      "tuna"
-    end
-
     def ruby_servers
-      app_servers + [migration_server]
+      (app_servers + [migration_server]).uniq
     end
 
     def all_servers
-      web_servers + app_servers + [migration_server]
+      (web_servers + app_servers + [migration_server]).uniq
     end
 
     def deploy_directory
