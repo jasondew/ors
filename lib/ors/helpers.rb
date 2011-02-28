@@ -7,10 +7,10 @@ module ORS
       info "[#{server}] installing codebase..."
 
       execute_command server, %(cd #{base_path}),
-                             %(rm -rf #{deploy_directory}),
-                             %(git clone #{repo}:#{name} #{deploy_directory}),
-                             %(mkdir -p #{deploy_directory}/tmp/pids),
-                             %(mkdir -p #{deploy_directory}/log)
+                              %(rm -rf #{deploy_directory}),
+                              %(git clone #{repo}:#{name} #{deploy_directory}),
+                              %(mkdir -p #{deploy_directory}/tmp/pids),
+                              %(mkdir -p #{deploy_directory}/log)
     end
 
     def setup_ruby server

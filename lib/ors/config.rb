@@ -4,7 +4,7 @@ module ORS
     CONFIG_FILENAME="config/deploy.yml"
 
     mattr_accessor :name, :environment, :use_gateway, :pretending, :log_lines, :rails2
-    mattr_accessor :gateway, :deploy_user, :repo, :base_path, :web_servers, :app_servers, :migration_server, :console_server
+    mattr_accessor :gateway, :deploy_user, :repo, :base_path, :web_servers, :app_servers, :migration_server, :console_server, :cron_server
 
     self.environment = "production"
     self.pretending = false
@@ -37,6 +37,7 @@ module ORS
           self.app_servers      = %w(eel jellyfish squid)
           self.migration_server = "tuna"
           self.console_server   = "tuna"
+          self.cron_server      = "tuna"
         end
       end
 

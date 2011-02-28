@@ -14,7 +14,7 @@ module ORS
         klass = command.to_s.capitalize
 
         if command =~ /-*version/i
-          puts "ORS v#{ORS::VERSION}"
+          info "ORS v#{ORS::VERSION}"
         else
           if available_commands.include? klass
             ORS::Config.parse_options options
@@ -23,7 +23,7 @@ module ORS
             if ORS::Config.valid_options?
               Base.run ORS::Commands.const_get(klass)
             else
-              puts "ERROR: Invalid options given."
+              info "ERROR: Invalid options given."
               Base.run Help
             end
           else
