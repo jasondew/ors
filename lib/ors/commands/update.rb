@@ -8,7 +8,7 @@ module ORS::Commands
       execute_in_parallel(all_servers) {|server| update_code server }
       execute_in_parallel(ruby_servers) {|server| bundle_install server }
 
-      execute_command cron_server, %(cd #{base_path}),
+      execute_command cron_server, %(cd #{deploy_directory}),
                                    %(if [ -f config/schedule.rb ]; then bundle exec whenever; fi)
     end
 
