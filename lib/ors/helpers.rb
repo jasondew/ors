@@ -97,7 +97,7 @@ module ORS
             return results
           else
             results.split("\n").each do |result|
-              info("[#{server}] #{result}")
+              info "[#{server}] #{result.chomp}\n"
             end
           end
         end
