@@ -63,11 +63,11 @@ module ORS
     extend ModuleMethods
 
     def ruby_servers
-      (app_servers + [migration_server]).uniq
+      (app_servers + [console_server, cron_server, migration_server]).uniq
     end
 
     def all_servers
-      (web_servers + app_servers + [migration_server]).uniq
+      (web_servers + ruby_servers).uniq
     end
 
     def deploy_directory
