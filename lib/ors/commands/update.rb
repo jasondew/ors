@@ -10,7 +10,7 @@ module ORS::Commands
 
       execute_command cron_server, %(source ~/.rvm/scripts/rvm),
                                    %(cd #{deploy_directory}),
-                                   %(if [ -f config/schedule.rb ]; then bundle exec whenever; fi)
+                                   %(if [ -f config/schedule.rb ]; then bundle exec whenever --update-crontab --set environment=#{environment} -i #{name}_#{environment}; fi)
     end
 
   end
