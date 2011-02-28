@@ -22,7 +22,7 @@ describe ORS::Command do
     end
 
     it "should show the version when given version as a command" do
-      mock(ORS::Command).info("ORS v#{ORS::VERSION}")
+      mock(ORS::Command).puts("ORS v#{ORS::VERSION}")
       subject.run ["version"]
     end
 

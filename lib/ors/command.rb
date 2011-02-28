@@ -14,7 +14,7 @@ module ORS
         klass = command.to_s.capitalize
 
         if command =~ /-*version/i
-          info "ORS v#{ORS::VERSION}"
+          puts "ORS v#{ORS::VERSION}"
         else
           if available_commands.include? klass
             ORS::Config.parse_options options
