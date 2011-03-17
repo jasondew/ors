@@ -3,7 +3,7 @@ module ORS::Commands
     def execute
       timestamps = app_servers.map do |server|
         [
-         "[#{server}]",
+         "[#{server}] ",
          execute_command(server,
                          %(cd #{deploy_directory}),
                          %(cat restart.timestamp),
