@@ -19,6 +19,7 @@ migrate       Runs the migrations on the migration server
 start         Starts up unicorn on the app servers
 stop          Stops unicorn on the app servers
 restart       Retarts unicorn on the app servers
+check         Prints out contents of restart.timestamp on the app servers
 
 === Environments
 Must be one of: production demo staging
