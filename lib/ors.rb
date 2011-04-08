@@ -1,6 +1,7 @@
 require "rubygems"
 require "git"
 require "yaml"
+require "erb"
 
 require "ors/version"
 require "ors/core_ext"

@@ -3,7 +3,7 @@ module ORS
 
     CONFIG_FILENAME="config/deploy.yml"
 
-    mattr_accessor :name, :environment, :use_gateway, :pretending, :log_lines, :rails2
+    mattr_accessor :name, :environment, :use_gateway, :pretending, :log_lines, :rails2, :deploy_hook
     mattr_accessor :gateway, :deploy_user, :repo, :base_path, :web_servers, :app_servers, :migration_server, :console_server, :cron_server
 
     self.environment = "production"
@@ -49,14 +49,14 @@ module ORS
         %w(production demo staging)
       end
 
+      def git
+        @git ||= Git.open(Dir.pwd)
+      end
+
       private
 
       def name_from_git
         git.config["remote.origin.url"].gsub /.*?:(.*?).git/, '\1'
-      end
-
-      def git
-        @git ||= Git.open(Dir.pwd)
       end
 
     end
@@ -68,6 +68,10 @@ module ORS
 
     def all_servers
       (web_servers + ruby_servers).uniq
+    end
+
+    def revision
+      Config.git.log(1).first.sha
     end
 
     def deploy_directory
