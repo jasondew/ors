@@ -7,19 +7,18 @@ module ORS::Commands
 Usage: ./ors <action> [environment=production] [options]
 
 === Actions
-help          You're looking at it
-env           Print out the configuration
+changes       View changes between what is deployed and committed
+check         Prints out contents of restart.timestamp on the app servers
 console       Bring up a console on the production servers
-logs          Show the last few log entries from the production servers
-exec          Executes a command (via the CMD environment variable) on the migration server
 deploy        Update the code, run the migrations, and restart unicorn
-setup         Sets up the default environment on the servers
-update        Updates the code on all servers
+help          You're looking at it
+logs          Show the last few log entries from the production servers
 migrate       Runs the migrations on the migration server
+restart       Retarts unicorn on the app servers
+setup         Sets up the default environment on the servers
 start         Starts up unicorn on the app servers
 stop          Stops unicorn on the app servers
-restart       Retarts unicorn on the app servers
-check         Prints out contents of restart.timestamp on the app servers
+update        Updates the code on all servers
 
 === Environments
 Must be one of: production demo staging
