@@ -5,6 +5,7 @@ module ORS
 
     mattr_accessor :name, :environment, :use_gateway, :pretending, :log_lines, :rails2, :deploy_hook
     mattr_accessor :gateway, :deploy_user, :repo, :base_path, :web_servers, :app_servers, :migration_server, :console_server, :cron_server
+    mattr_accessor :options
 
     self.environment = "production"
     self.pretending = false
@@ -16,6 +17,7 @@ module ORS
       def parse_options options
         self.name = name_from_git
         self.environment = options.shift unless options.empty? or options.first.match(/^-/)
+        self.options = options.dup
 
         options.each do |option|
           case option
