@@ -7,6 +7,7 @@ describe ORS::Config do
   context ".parse_options" do
     it("should default pretend to false") { subject.pretending.should be_false }
     it("should default use_gateway to true") { subject.use_gateway.should be_true }
+    it("should default rails2 to false") { subject.rails2.should be_false }
 
     it "should set the environment when it is given" do
       ORS::Config.parse_options %w(foobar -p)

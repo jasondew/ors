@@ -1,21 +1,52 @@
-Usage: ./ors <action> [environment=production] [options]
+== Set Up
 
-=== Actions
-help          You're looking at it
-console       Bring up a console on the production servers
-logs          Show the last few log entries from the production servers
-deploy        Update the code, run the migrations, and restart unicorn
-setup         Sets up the default environment on the servers
-update        Updates the code on all servers
-migrate       Runs the migrations on the migration server
-start         Starts up unicorn on the app servers
-stop          Stops unicorn on the app servers
-restart       Retarts unicorn on the app servers
+* Set up repo on eden
 
-=== Environments
-Must be one of: production demo staging
-Defaults to production.
 
-=== Options
---pretend    (or -p)   Don't execute anything, just show me what you're going to do (default: false)
---no-gateway (or -ng)  Don't use a gateway (if you're inside the firewall)          (default: true)
+Required Files:
+* .rvmrc
+* Gemfile
+* Gemfile.lock
+* config/database.yml
+* .git/config
+* config/unicorn.rb
+
+=== Setting Up GitConfig
+
+    [remote "production"]
+      url = git@eden:ors/deployment.git
+      push = refs/heads/master:refs/heads/production
+
+    >> git push production # updates remote production branch without local branch
+
+
+=== Setting up RVM
+
+On your ruby servers you should create a .rvmrc in the home directory of the user running unicorn.
+
+    rvm_install_on_use_flag=1
+    rvm_gemset_create_on_use_flag=1
+    rvm_trust_rvmrcs_flag=1
+
+
+=== Required gems
+
+* rake
+* bundler
+
+
+Gemfile
+
+    group :production, :demo do
+      gem 'unicorn'
+      gem 'mysql2'
+      gem 'dalli'
+      gem 'exception_notification', :git => "git://github.com/rails/exception_notification", :branch => "master", :require => "exception_notifier"
+    end
+
+
+
+=== Usage
+
+run `ors help`
+

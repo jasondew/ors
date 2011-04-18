@@ -7,10 +7,10 @@ module ORS
       info "[#{server}] installing codebase..."
 
       execute_command server, %(cd #{base_path}),
-                             %(rm -rf #{deploy_directory}),
-                             %(git clone #{REPO}:#{name} #{deploy_directory}),
-                             %(mkdir -p #{deploy_directory}/tmp/pids),
-                             %(mkdir -p #{deploy_directory}/log)
+                              %(rm -rf #{deploy_directory}),
+                              %(git clone #{repo}:#{name} #{deploy_directory}),
+                              %(mkdir -p #{deploy_directory}/tmp/pids),
+                              %(mkdir -p #{deploy_directory}/log)
     end
 
     def setup_ruby server
@@ -21,7 +21,7 @@ module ORS
                              %(gem install rubygems-update),
                              %(gem update --system),
                              %(gem install bundler),
-                             %(bundle install --without development test osx > bundler.log)
+                             %(bundle install --without development test osx_development > bundler.log)
     end
 
     def update_code server
@@ -37,8 +37,8 @@ module ORS
       info "[#{server}] installing bundle..."
 
       execute_command server, %(source ~/.rvm/scripts/rvm),
-                             %(cd #{deploy_directory}),
-                             %(bundle install --without development test osx > bundler.log)
+                              %(cd #{deploy_directory}),
+                              %(bundle install --without development test osx_development > bundler.log)
     end
 
     def start_server server
@@ -46,7 +46,7 @@ module ORS
 
       execute_command server, %(source ~/.rvm/scripts/rvm),
                               %(cd #{deploy_directory}),
-                              %(bundle exec #{unicorn} -c config/unicorn.rb -D -E #{environment})
+                              %(if [ -f config.ru ]; then RAILS_ENV=#{environment} bundle exec unicorn -c config/unicorn.rb -D -E #{environment}; else RAILS_ENV=#{environment} bundle exec unicorn_rails -c config/unicorn.rb -D -E #{environment}; fi)
     end
 
     def stop_server server
@@ -66,8 +66,9 @@ module ORS
     def run_migrations server
       info "[#{server}] running migrations..."
 
-      execute_command server, %(cd #{deploy_directory}),
-                              %(RAILS_ENV=#{environment} rake db:migrate db:seed)
+      execute_command server, %(source ~/.rvm/scripts/rvm),
+                              %(cd #{deploy_directory}),
+                              %(RAILS_ENV=#{environment} bundle exec rake db:migrate db:seed)
     end
 
     def execute_in_parallel servers
@@ -96,7 +97,7 @@ module ORS
             return results
           else
             results.split("\n").each do |result|
-              info("[#{server}] #{result}")
+              info "[#{server}] #{result.chomp}\n"
             end
           end
         end

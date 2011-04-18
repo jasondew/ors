@@ -1,7 +1,10 @@
 module ORS
   module Config
 
-    mattr_accessor :name, :environment, :use_gateway, :pretending, :log_lines
+    CONFIG_FILENAME="config/deploy.yml"
+
+    mattr_accessor :name, :environment, :use_gateway, :pretending, :log_lines, :rails2, :deploy_hook
+    mattr_accessor :gateway, :deploy_user, :repo, :base_path, :web_servers, :app_servers, :migration_server, :console_server, :cron_server
 
     self.environment = "production"
     self.pretending = false
@@ -22,6 +25,22 @@ module ORS
         end
       end
 
+      def parse_config_file
+        if File.exists?(CONFIG_FILENAME)
+          YAML.load(File.read(CONFIG_FILENAME)).each {|(name, value)| send "#{name}=", value }
+        else
+          self.gateway          = "deploy-gateway"
+          self.deploy_user      = "deployer"
+          self.repo             = "ors_git"
+          self.base_path        = "/var/www"
+          self.web_servers      = %w(koala)
+          self.app_servers      = %w(eel jellyfish squid)
+          self.migration_server = "tuna"
+          self.console_server   = "tuna"
+          self.cron_server      = "tuna"
+        end
+      end
+
       def valid_options?
         name.to_s.size > 0 and valid_environments.include?(environment)
       end
@@ -30,57 +49,29 @@ module ORS
         %w(production demo staging)
       end
 
+      def git
+        @git ||= Git.open(Dir.pwd)
+      end
+
       private
 
       def name_from_git
         git.config["remote.origin.url"].gsub /.*?:(.*?).git/, '\1'
       end
 
-      def git
-        @git ||= Git.open(Dir.pwd)
-      end
-
     end
     extend ModuleMethods
 
-    def gateway
-      "deploy-gateway"
-    end
-
-    def deploy_user
-      "deployer"
-    end
-
-    def repo
-      "ors_git"
-    end
-
-    def base_path
-      "/var/www"
-    end
-
-    def web_servers
-      %w(koala)
-    end
-
-    def app_servers
-      %w(eel jellyfish squid)
-    end
-
-    def migration_server
-      "tuna"
-    end
-
-    def console_server
-      "tuna"
-    end
-
     def ruby_servers
-      app_servers + [migration_server]
+      (app_servers + [console_server, cron_server, migration_server]).uniq
     end
 
     def all_servers
-      web_servers + app_servers + [migration_server]
+      (web_servers + ruby_servers).uniq
+    end
+
+    def revision
+      Config.git.log(1).first.sha
     end
 
     def deploy_directory
