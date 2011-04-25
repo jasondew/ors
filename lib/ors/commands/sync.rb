@@ -9,10 +9,15 @@ module ORS::Commands
         environments = [environment]
       end
 
-      environments.each do |e|
-        unless ORS::Config.git.branches[e].nil?
-          info "Syncing environment/branch #{e}..."
-          system "git co master && git co #{e} && git pull && git merge master && git push && git co master"
+      environments.each do |environment|
+        unless ORS::Config.git.branches[environment].nil?
+          info "Syncing environment/branch #{environment}..."
+          execute_command :localhost, %(git checkout master),
+                                      %(git checkout #{environment}),
+                                      %(git pull),
+                                      %(git rebase master),
+                                      %(git push),
+                                      %(git checkout master)
         end
       end
     end

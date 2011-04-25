@@ -83,6 +83,7 @@ module ORS
     def execute_command server, *command_array
       options = {:exec => false, :capture => false}
       options.merge!(command_array.pop) if command_array.last.is_a?(Hash)
+      options[:local] = true if server.to_s == "localhost"
 
       command = build_command(server, command_array, options)
 
@@ -118,10 +119,14 @@ module ORS
       commands = command_array.join " && "
       psuedo_tty = options[:exec] ? '-t ' : ''
 
-      if use_gateway
-        %(ssh #{psuedo_tty}#{gateway} 'ssh #{psuedo_tty}#{deploy_user}@#{server} "#{commands}"')
+      if options[:local]
+        commands
       else
-        %(ssh #{psuedo_tty}#{deploy_user}@#{server} "#{commands}")
+        if use_gateway
+          %(ssh #{psuedo_tty}#{gateway} 'ssh #{psuedo_tty}#{deploy_user}@#{server} "#{commands}"')
+        else
+          %(ssh #{psuedo_tty}#{deploy_user}@#{server} "#{commands}")
+        end
       end
     end
 
