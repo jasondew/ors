@@ -22,6 +22,11 @@ describe ORS::Commands::Runner do
       lambda {subject.execute}.should raise_error
     end
 
+    it "should require a non-empty argument to --code" do
+      ORS::Config.parse_options ['--code', ' ']
+      lambda {subject.execute}.should raise_error
+    end
+
     it "should be successful with an argument to --code" do
       ORS::Config.parse_options %w(--code true)
       mock(subject).execute_command(is_a(String), is_a(String), is_a(String), is_a(String), is_a(Hash)).returns("results")
