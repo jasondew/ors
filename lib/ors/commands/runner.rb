@@ -3,7 +3,7 @@ module ORS::Commands
     def execute
       begin
         code = ORS::Config.options[ ORS::Config.options.index{|e| e =~ /^(-c|--code)$/} + 1 ]
-        raise if code.blank?
+        raise if code.strip.empty?
       rescue
         fatal "ERROR: Missing option --code 'ruby code'."
       end
