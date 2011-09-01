@@ -9,7 +9,7 @@ Usage: ./ors <action> [environment=production] [options]
 === Actions
 changes       View changes between what is deployed and committed
 check         Prints out contents of restart.timestamp on the app servers
-console       Bring up a console on the production servers
+console       Bring up a console on the console server
 deploy        Update the code, run the migrations, and restart unicorn
 help          You're looking at it
 logs          Show the last few log entries from the production servers
