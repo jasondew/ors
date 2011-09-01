@@ -52,6 +52,10 @@ describe ORS::Helpers do
       it "should build the command with psuedo tty" do
         subject.build_command("server", %(cd /tmp), :exec => true).should == %(ssh -t deploy-gateway 'ssh -t deployer@server "cd /tmp"')
       end
+
+      it "should build the command with quiet mode" do
+        subject.build_command("server", %(cd /tmp), :quiet_ssh => true).should == %(ssh -q deploy-gateway 'ssh -q deployer@server "cd /tmp"')
+      end
     end
 
     context "without gateway" do
@@ -63,6 +67,10 @@ describe ORS::Helpers do
 
       it "should build the command with psuedo tty" do
         subject.build_command("server", %(cd /tmp), :exec => true).should == %(ssh -t deployer@server "cd /tmp")
+      end
+
+      it "should build the command with quiet mode" do
+        subject.build_command("server", %(cd /tmp), :quiet_ssh => true).should == %(ssh -q deployer@server "cd /tmp")
       end
     end
   end
