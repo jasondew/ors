@@ -15,6 +15,7 @@ help          You're looking at it
 logs          Show the last few log entries from the production servers
 migrate       Runs the migrations on the migration server
 restart       Retarts unicorn on the app servers
+runner        Runs ruby code via Rails' runner on the console server
 setup         Sets up the default environment on the servers
 start         Starts up unicorn on the app servers
 stop          Stops unicorn on the app servers
