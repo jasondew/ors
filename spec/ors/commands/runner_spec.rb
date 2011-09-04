@@ -29,13 +29,13 @@ describe ORS::Commands::Runner do
 
     it "should be successful with an argument to --code" do
       ORS::Config.parse_options %w(--code true)
-      mock(subject).execute_command(is_a(String), is_a(String), is_a(String), is_a(String), is_a(Hash)).returns("results")
+      mock(subject).execute_command(is_a(String), is_a(Array), is_a(String), is_a(Hash)).returns("results")
       lambda {subject.execute}.should_not raise_error
     end
 
     it "should be successful with an argument to -c" do
       ORS::Config.parse_options %w(-c true)
-      mock(subject).execute_command(is_a(String), is_a(String), is_a(String), is_a(String), is_a(Hash)).returns("results")
+      mock(subject).execute_command(is_a(String), is_a(Array), is_a(String), is_a(Hash)).returns("results")
       lambda {subject.execute}.should_not raise_error
     end
   end

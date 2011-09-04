@@ -11,7 +11,7 @@ describe ORS::Commands::Update do
       mock(subject).info /updating/
       mock(subject).execute_in_parallel(:all_servers)
       mock(subject).execute_in_parallel(:ruby_servers)
-      mock(subject).execute_command(:cron_server, is_a(String), is_a(String), is_a(String))
+      mock(subject).execute_command(:cron_server, is_a(Array), is_a(String))
 
       subject.execute
     end

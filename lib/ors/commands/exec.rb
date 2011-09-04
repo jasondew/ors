@@ -5,9 +5,7 @@ module ORS::Commands
     def execute
       info "executing command for #{name} #{environment}..."
 
-      execute_command migration_server, %(source ~/.rvm/scripts/rvm),
-                                        %(cd #{deploy_directory}),
-                                        %(bundle exec #{ENV["CMD"]})
+      execute_command migration_server, prepare_environment, %(bundle exec #{ENV["CMD"]})
     end
 
   end

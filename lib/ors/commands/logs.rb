@@ -5,10 +5,9 @@ module ORS::Commands
       all_logs = app_servers.map do |server|
         [
          server,
-         execute_command(server,
-                         %(cd #{deploy_directory}),
-                         %(tail -n #{log_lines} log/#{environment}.log),
-                         :capture => true)
+         execute_command(server, prepare_environment,
+                                 %(tail -n #{log_lines} log/#{environment}.log),
+                                 :capture => true)
         ]
       end
 

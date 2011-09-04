@@ -1,11 +1,9 @@
 module ORS::Commands
   class Console < Base
     def execute
-      execute_command console_server,
-                      %(source ~/.rvm/scripts/rvm),
-                      %(cd #{deploy_directory}),
-                      %(if [ -f script/rails ]; then bundle exec rails console #{environment}; else ./script/console #{environment}; fi),
-                      :exec => true
+      execute_command console_server, prepare_environment,
+                                      %(if [ -f script/rails ]; then bundle exec rails console #{environment}; else ./script/console #{environment}; fi),
+                                      :exec => true
     end
 
     def help

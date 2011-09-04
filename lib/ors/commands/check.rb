@@ -4,10 +4,7 @@ module ORS::Commands
       timestamps = app_servers.map do |server|
         [
          "[#{server}] ",
-         execute_command(server,
-                         %(cd #{deploy_directory}),
-                         %(cat restart.timestamp),
-                         :capture => true)
+         execute_command(server, prepare_environment, %(cat restart.timestamp), :capture => true)
         ].join
       end.join("\n")
 

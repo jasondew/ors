@@ -7,11 +7,9 @@ module ORS::Commands
       rescue
         fatal "ERROR: Missing option --code 'ruby code'."
       end
-      results = execute_command console_server,
-                      %(source ~/.rvm/scripts/rvm),
-                      %({ cd #{deploy_directory} > /dev/null; }), # Silence RVM's "Using... gemset..."
-                      %(if [ -f script/rails ]; then bundle exec rails runner -e #{environment} \\"#{code}\\"; else ./script/runner -e #{environment} \\"#{code}\\"; fi),
-                      :capture => true, :quiet_ssh => true
+      results = execute_command console_server, prepare_environment,
+                                                %(if [ -f script/rails ]; then bundle exec rails runner -e #{environment} \\"#{code}\\"; else ./script/runner -e #{environment} \\"#{code}\\"; fi),
+                                                :capture => true, :quiet_ssh => true
       results.sub!(/\AUsing BufferedLogger due to exception: .*?\n/, '') # The central_logger gem spits this out without any way of shutting it up
       puts results
     end
