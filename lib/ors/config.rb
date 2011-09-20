@@ -3,7 +3,7 @@ module ORS
 
     CONFIG_FILENAME="config/deploy.yml"
 
-    mattr_accessor :name, :environment, :use_gateway, :pretending, :log_lines, :rails2, :deploy_hook
+    mattr_accessor :name, :environment, :use_gateway, :pretending, :log_lines, :rails2, :deploy_hook, :remote_deploy_hook
     mattr_accessor :gateway, :deploy_user, :repo, :base_path, :web_servers, :app_servers, :migration_server, :console_server, :cron_server
     mattr_accessor :options
 
