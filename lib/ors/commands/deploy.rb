@@ -11,7 +11,7 @@ module ORS::Commands
 
       if remote_deploy_hook
         execute_in_parallel(app_servers) do |server|
-          execute_command server, prepare_environment, remote_deploy_hook
+          execute_command server, prepare_environment, "RAILS_ENV=#{environment} #{remote_deploy_hook}"
         end
       end
     end
