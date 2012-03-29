@@ -29,7 +29,8 @@ module ORS
       execute_command server, prepare_environment,
                               %(git fetch),
                               %(git checkout -q -f origin/#{environment}),
-                              %(git reset --hard)
+                              %(git reset --hard),
+                              %(git submodule update --init)
     end
 
     def bundle_install server
