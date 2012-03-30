@@ -6,7 +6,7 @@ module ORS::Commands
       info "setting up #{name} #{environment}..."
 
       info "Are you sure? ('yes' + ctrl+D^2)"
-      if STDIN.read == "yes"
+      if pretending || STDIN.read == "yes"
         execute_in_parallel(all_servers) {|server| setup_repo server }
         execute_in_parallel(ruby_servers) {|server| setup_ruby server }
 
