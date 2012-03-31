@@ -103,7 +103,9 @@ describe ORS::Config do
      "git://example.com/testing/gitlabhq.git" => "testing/gitlabhq",
      "git://github.com/testing/github" => "testing/github",
      "git@github.com:testing/github" => "testing/github",
-     "git@ghub.com:testing/gitlabhq.git" => "testing/gitlabhq"
+     "git@ghub.com:testing/gitlabhq.git" => "testing/gitlabhq",
+     "git@ghub.com:gitlabhq.git" => "gitlabhq",
+     "git://ghub.com/gitlabhq.git" => "gitlabhq"
     }.each do |remote, name|
       it "should handle a remote origin url such as #{remote}" do
         mock(ORS::Config).git { mock!.config { {"remote.origin.url" => remote} }}
