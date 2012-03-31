@@ -97,4 +97,21 @@ describe ORS::Config do
     end
   end
 
+  context "#name_from_git" do
+    {
+     "git://github.com/testing/github.git" => "testing/github",
+     "git://example.com/testing/gitlabhq.git" => "testing/gitlabhq",
+     "git://github.com/testing/github" => "testing/github",
+     "git@github.com:testing/github" => "testing/github",
+     "git@ghub.com:testing/gitlabhq.git" => "testing/gitlabhq",
+     "git@ghub.com:gitlabhq.git" => "gitlabhq",
+     "git://ghub.com/gitlabhq.git" => "gitlabhq"
+    }.each do |remote, name|
+      it "should handle a remote origin url such as #{remote}" do
+        mock(ORS::Config).git { mock!.config { {"remote.origin.url" => remote} }}
+        ORS::Config.send(:name_from_git).should == name
+      end
+    end
+  end
+
 end
