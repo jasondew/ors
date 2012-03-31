@@ -4,7 +4,7 @@ module ORS
     CONFIG_FILENAME="config/deploy.yml"
 
     mattr_accessor :name, :environment, :use_gateway, :pretending, :log_lines, :rails2, :deploy_hook, :remote_deploy_hook
-    mattr_accessor :gateway, :deploy_user, :repo, :base_path, :web_servers, :app_servers, :migration_server, :console_server, :cron_server
+    mattr_accessor :gateway, :deploy_user, :repo, :remote, :base_path, :web_servers, :app_servers, :migration_server, :console_server, :cron_server
     mattr_accessor :options
 
     self.environment = "production"
@@ -34,6 +34,7 @@ module ORS
           self.gateway          = "deploy-gateway"
           self.deploy_user      = "deployer"
           self.repo             = "ors_git"
+          self.remote           = nil
           self.base_path        = "/var/www"
           self.web_servers      = %w(koala)
           self.app_servers      = %w(eel jellyfish squid)
@@ -86,5 +87,8 @@ module ORS
       end
     end
 
+    def repo_url
+      @repo_url ||= (remote || "#{repo}:#{name}")
+    end
   end
 end

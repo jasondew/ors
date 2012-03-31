@@ -114,4 +114,21 @@ describe ORS::Config do
     end
   end
 
+  context "#repo_url" do
+    before do
+      subject.remote = "git://github.com/testing/git.git"
+      subject.repo = "git@github.com"
+    end
+
+    it "should return the remote if set" do
+      subject.repo_url.should == "git://github.com/testing/git.git"
+    end
+
+    it "should return the repo:name combination if remote is not set" do
+      subject.remote = nil
+      subject.name = "testing/git"
+      subject.repo_url.should == "git@github.com:testing/git"
+    end
+  end
+
 end
