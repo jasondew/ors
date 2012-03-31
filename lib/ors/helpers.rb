@@ -16,7 +16,7 @@ module ORS
     def setup_ruby server
       info "[#{server}] installing ruby and gems..."
 
-      execute_command server, prepare_environment,
+      execute_command server, prepare_initial_environment,
                               %(gem install rubygems-update),
                               %(gem update --system),
                               %(gem install bundler),
@@ -126,6 +126,18 @@ module ORS
           %(ssh #{quiet_ssh}#{psuedo_tty}#{deploy_user}@#{server} "#{commands}")
         end
       end
+    end
+
+    def prepare_initial_environment
+      # We do 2 cd's and a git checkout here because the master
+      # branch may not always contain the proper rvmrc/Gemfile
+      # we need when setting up the rest of the deploy
+      prepare_environment + [
+                             %(git checkout -q -f origin/#{environment}),
+                             %(git reset --hard),
+                             %(cd ../),
+                             %(cd #{deploy_directory})
+                            ]
     end
 
     def prepare_environment
