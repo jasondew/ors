@@ -108,26 +108,34 @@ describe ORS::Config do
      "git://ghub.com/gitlabhq.git" => "gitlabhq"
     }.each do |remote, name|
       it "should handle a remote origin url such as #{remote}" do
-        mock(ORS::Config).git { mock!.config { {"remote.origin.url" => remote} }}
+        stub(ORS::Config).git { mock!.config { {"remote.origin.url" => remote} }}
         ORS::Config.send(:name_from_git).should == name
       end
     end
   end
 
-  context "#repo_url" do
+  context "#remote_from_git" do
     before do
-      subject.remote = "git://github.com/testing/git.git"
-      subject.repo = "git@github.com"
+      subject.remote_alias = "origin"
     end
 
-    it "should return the remote if set" do
-      subject.repo_url.should == "git://github.com/testing/git.git"
+    it "should raise an error if the remote doesn't exist" do
+      mock(ORS::Config).git { mock!.config { {"remote.oregon.url" => "git://github.com/testing/git.git"} }}
+
+      lambda { ORS::Config.send(:remote_from_git) }.should raise_error
     end
 
-    it "should return the repo:name combination if remote is not set" do
-      subject.remote = nil
-      subject.name = "testing/git"
-      subject.repo_url.should == "git@github.com:testing/git"
+    it "should return the remote based on the remote alias (origin)" do
+      stub(ORS::Config).git { mock!.config { {"remote.origin.url" => "git://github.com/testing/git.git"} }}
+
+      ORS::Config.send(:remote_from_git).should == "git://github.com/testing/git.git"
+    end
+
+    it "should return the remote based on the remote alias (arbit)" do
+      subject.remote_alias = "arbit"
+      stub(ORS::Config).git { mock!.config { {"remote.arbit.url" => "git://github.com/arbit/git.git"} }}
+
+      ORS::Config.send(:remote_from_git).should == "git://github.com/arbit/git.git"
     end
   end
 

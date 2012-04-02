@@ -4,9 +4,10 @@ module ORS
     CONFIG_FILENAME="config/deploy.yml"
 
     mattr_accessor :name, :environment, :use_gateway, :pretending, :log_lines, :rails2, :deploy_hook, :remote_deploy_hook
-    mattr_accessor :gateway, :deploy_user, :repo, :remote, :base_path, :web_servers, :app_servers, :migration_server, :console_server, :cron_server
+    mattr_accessor :gateway, :deploy_user, :remote_alias, :base_path, :web_servers, :app_servers, :migration_server, :console_server, :cron_server
     mattr_accessor :options
 
+    self.remote_alias = "origin"
     self.environment = "production"
     self.pretending = false
     self.use_gateway = true
@@ -33,8 +34,6 @@ module ORS
         else
           self.gateway          = "deploy-gateway"
           self.deploy_user      = "deployer"
-          self.repo             = "ors_git"
-          self.remote           = nil
           self.base_path        = "/var/www"
           self.web_servers      = %w(koala)
           self.app_servers      = %w(eel jellyfish squid)
@@ -58,10 +57,17 @@ module ORS
 
       private
 
-      def name_from_git
-        git.config["remote.origin.url"].gsub(/^[\w]*(@|:\/\/)[^\/:]*(\/|:)([a-zA-Z0-9\/]*)(.git)?$/i, '\3')
+      def remote_from_git
+        if git.config.has_key?("remote.#{remote_alias}.url")
+          git.config["remote.#{remote_alias}.url"]
+        else
+          raise StandardError, "There is no #{remote_alias} remote in your git config, please check your config/deploy.yml"
+        end
       end
 
+      def name_from_git
+        remote_from_git.gsub(/^[\w]*(@|:\/\/)[^\/:]*(\/|:)([a-zA-Z0-9\/]*)(.git)?$/i, '\3')
+      end
     end
     extend ModuleMethods
 
@@ -87,8 +93,8 @@ module ORS
       end
     end
 
-    def repo_url
-      @repo_url ||= (remote || "#{repo}:#{name}")
+    def remote_url
+      @remote_url ||= remote_from_git
     end
   end
 end

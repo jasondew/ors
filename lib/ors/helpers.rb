@@ -8,7 +8,7 @@ module ORS
 
       execute_command server, %(cd #{base_path}),
                               %(rm -rf #{deploy_directory}),
-                              %(git clone #{repo_url} #{deploy_directory}),
+                              %(git clone #{remote_url} #{deploy_directory}),
                               %(mkdir -p #{deploy_directory}/tmp/pids),
                               %(mkdir -p #{deploy_directory}/log)
     end
@@ -28,7 +28,7 @@ module ORS
 
       execute_command server, prepare_environment,
                               %(git fetch),
-                              %(git checkout -q -f origin/#{environment}),
+                              %(git checkout -q -f #{remote_alias}/#{environment}),
                               %(git reset --hard),
                               %(git submodule update --init)
     end
@@ -133,7 +133,7 @@ module ORS
       # branch may not always contain the proper rvmrc/Gemfile
       # we need when setting up the rest of the deploy
       prepare_environment + [
-                             %(git checkout -q -f origin/#{environment}),
+                             %(git checkout -q -f #{remote_alias}/#{environment}),
                              %(git reset --hard),
                              %(cd ../),
                              %(cd #{deploy_directory})
