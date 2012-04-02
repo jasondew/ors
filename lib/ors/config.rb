@@ -58,7 +58,7 @@ module ORS
       private
 
       def name_from_git
-        git.config["remote.origin.url"].gsub(/^[\w]*(@|:\/\/)[^\/:]*(\/|:)([a-zA-Z0-9\/]*)(.git)?$/i, '\3')
+        git.config["remote.origin.url"].gsub(/^[\w]*(@|:\/\/)[^\/:]*(\/|:)([a-zA-Z0-9\/_-]*)(.git)?$/i, '\3')
       end
 
     end
