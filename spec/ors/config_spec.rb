@@ -105,7 +105,9 @@ describe ORS::Config do
      "git@github.com:testing/github" => "testing/github",
      "git@ghub.com:testing/gitlabhq.git" => "testing/gitlabhq",
      "git@ghub.com:gitlabhq.git" => "gitlabhq",
-     "git://ghub.com/gitlabhq.git" => "gitlabhq"
+     "git://ghub.com/gitlabhq.git" => "gitlabhq",
+     "git://ghub.com/level_git.git" => "level_git",
+     "git://ghub.com/level-up/two.git" => "level-up/two"
     }.each do |remote, name|
       it "should handle a remote origin url such as #{remote}" do
         stub(ORS::Config).git { mock!.config { {"remote.origin.url" => remote} }}

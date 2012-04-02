@@ -66,7 +66,7 @@ module ORS
       private
 
       def name_from_git
-        remote_from_git.gsub(/^[\w]*(@|:\/\/)[^\/:]*(\/|:)([a-zA-Z0-9\/]*)(.git)?$/i, '\3')
+        remote_from_git.gsub(/^[\w]*(@|:\/\/)[^\/:]*(\/|:)([a-zA-Z0-9\/_-]*)(.git)?$/i, '\3')
       end
     end
     extend ModuleMethods
