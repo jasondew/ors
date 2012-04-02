@@ -55,8 +55,6 @@ module ORS
         @git ||= Git.open(Dir.pwd)
       end
 
-      private
-
       def remote_from_git
         if git.config.has_key?("remote.#{remote_alias}.url")
           git.config["remote.#{remote_alias}.url"]
@@ -64,6 +62,8 @@ module ORS
           raise StandardError, "There is no #{remote_alias} remote in your git config, please check your config/deploy.yml"
         end
       end
+
+      private
 
       def name_from_git
         remote_from_git.gsub(/^[\w]*(@|:\/\/)[^\/:]*(\/|:)([a-zA-Z0-9\/]*)(.git)?$/i, '\3')
@@ -94,7 +94,7 @@ module ORS
     end
 
     def remote_url
-      @remote_url ||= remote_from_git
+      @remote_url ||= Config.remote_from_git
     end
   end
 end
