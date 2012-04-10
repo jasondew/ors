@@ -1,4 +1,4 @@
-== Set Up
+# Set Up
 
 Required Files:
 * .rvmrc
@@ -9,12 +9,13 @@ Required Files:
 * config/unicorn.rb
 
 
-=== Setting up .git/config
+### Setting up .git/config
+
 
 Your .git/config should know about the remotes you will be using to deploy to the server (usually just origin) as it will pull information about the remote from your local config file
 
 
-=== Setting up RVM
+### Setting up RVM
 
 On your ruby servers you should create a .rvmrc in the home directory of the user running unicorn.
 
@@ -23,7 +24,7 @@ On your ruby servers you should create a .rvmrc in the home directory of the use
     rvm_trust_rvmrcs_flag=1
 
 
-=== Required gems
+### Required gems
 
 * rake
 * bundler
@@ -33,12 +34,12 @@ ors deploy commands assume you are using unicorn for your servers.
 
 
 
-== Usage
+# Usage
 
 run `ors help` for a list of commands to use.
 
 
-=== Brief Examples
+### Brief Examples
 
 Deploying to the staging website
     bundle exec ors deploy to staging
@@ -50,7 +51,7 @@ Deploying a feature branch to the staging website
     bundle exec ors deploy origin/feature_branch to staging
 
 
-=== Notes
+### Notes
 * By default the environment is assumed to be production and the branch you are deploying is assumed to be origin/#{environment}.
 * You can override settings by implementing a config/deploy.yml file in your repo.
 
