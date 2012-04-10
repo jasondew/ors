@@ -27,7 +27,7 @@ module ORS
       info "[#{server}] updating codebase..."
 
       execute_command server, prepare_environment,
-                              %(git fetch),
+                              %(git fetch #{remote_alias}),
                               %(git checkout -q -f #{remote_alias}/#{environment}),
                               %(git reset --hard),
                               %(git submodule update --init)
