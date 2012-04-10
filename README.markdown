@@ -19,6 +19,7 @@ Your .git/config should know about the remotes you will be using to deploy to th
 ### Setting up RVM
 
 On your ruby servers you should create a .rvmrc in the home directory of the user running unicorn.
+
 ```bash
 rvm_install_on_use_flag=1
 
