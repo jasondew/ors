@@ -3,6 +3,11 @@ require "spec_helper"
 describe ORS::Commands::Update do
 
   context "#run" do
+    before do
+      ORS::Config.parse_options []
+      ORS::Config.parse_config_file
+    end
+
     it "should update code, bundle install, and set up cron" do
       stub(subject).all_servers { :all_servers }
       stub(subject).ruby_servers { :ruby_servers }

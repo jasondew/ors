@@ -7,16 +7,21 @@ module ORS
     mattr_accessor :gateway, :deploy_user, :remote_alias, :base_path, :web_servers, :app_servers, :migration_server, :console_server, :cron_server
     mattr_accessor :options
 
-    self.remote_alias = "origin"
-    self.environment = "production"
-    self.pretending = false
-    self.use_gateway = true
-    self.log_lines = 100
+
 
     module ModuleMethods
 
+      def set_default_options
+        self.remote_alias = "origin"
+        self.environment = "production"
+        self.pretending = false
+        self.use_gateway = true
+        self.log_lines = 100
+      end
+
       def parse_options options
-        self.name = name_from_git
+        set_default_options
+
         self.environment = options.shift unless options.empty? or options.first.match(/^-/)
         self.options = options.dup
 
