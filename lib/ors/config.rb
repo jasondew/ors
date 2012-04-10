@@ -41,6 +41,8 @@ module ORS
           self.console_server   = "tuna"
           self.cron_server      = "tuna"
         end
+
+        self.name = name_from_git
       end
 
       def valid_options?
