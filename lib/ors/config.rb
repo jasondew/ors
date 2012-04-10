@@ -8,7 +8,6 @@ module ORS
     mattr_accessor :options
 
 
-
     module ModuleMethods
 
       def set_default_options
@@ -17,6 +16,15 @@ module ORS
         self.pretending = false
         self.use_gateway = true
         self.log_lines = 100
+
+        self.gateway          = "deploy-gateway"
+        self.deploy_user      = "deployer"
+        self.base_path        = "/var/www"
+        self.web_servers      = %w(koala)
+        self.app_servers      = %w(eel jellyfish squid)
+        self.migration_server = "tuna"
+        self.console_server   = "tuna"
+        self.cron_server      = "tuna"
       end
 
       def parse_options options
@@ -36,15 +44,6 @@ module ORS
       def parse_config_file
         if File.exists?(CONFIG_FILENAME)
           YAML.load(File.read(CONFIG_FILENAME)).each {|(name, value)| send "#{name}=", value }
-        else
-          self.gateway          = "deploy-gateway"
-          self.deploy_user      = "deployer"
-          self.base_path        = "/var/www"
-          self.web_servers      = %w(koala)
-          self.app_servers      = %w(eel jellyfish squid)
-          self.migration_server = "tuna"
-          self.console_server   = "tuna"
-          self.cron_server      = "tuna"
         end
 
         self.name = name_from_git
