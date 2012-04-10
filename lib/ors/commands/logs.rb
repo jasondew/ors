@@ -3,7 +3,7 @@ class ORS
     class Logs < Base
 
       def execute
-        all_logs = app_servers.map do |server|
+        all_logs = ORS.config[:app_servers].map do |server|
           [
            server,
            execute_command(server,
@@ -13,7 +13,7 @@ class ORS
           ]
         end
 
-        puts ORS::LogUnifier.new(all_logs).unify unless pretending
+        puts ORS::LogUnifier.new(all_logs).unify unless ORS.config[:pretending]
       end
     end # Logs < Base
   end
