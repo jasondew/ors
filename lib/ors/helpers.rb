@@ -7,7 +7,7 @@ class ORS
         option = ORS.config[:args].shift
 
         unless option.nil?
-          if option.match(/^[a-zA-Z0-9-_]+\/[a-zA-Z0-9-_]+$/)
+          if option.match(/^[a-zA-Z0-9_\-]+\/[a-zA-Z0-9_\-]+$/)
             remote, *branch = option.split("/")
 
             ORS.config[:remote] = remote
@@ -24,7 +24,7 @@ class ORS
     # Helpers for preparing to run a command on a server
     module PrepareHelpers
       def prepare_environment
-        [%({ cd #{deploy_directory} > /dev/null; })]
+        [%({ cd #{ORS.config[:deploy_directory]} > /dev/null; })]
       end
 
       def prepare_environment_with_rvm

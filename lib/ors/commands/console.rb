@@ -15,5 +15,6 @@ class ORS
       def description
         "Replaces current process and runs rails console."
       end
+    end # Console < Base
   end
 end

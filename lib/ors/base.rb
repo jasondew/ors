@@ -1,6 +1,6 @@
 class ORS
   def self.config
-    @config ||= ORS::Config.new(@options)
+    @config ||= ORS::Config.new(@options || [])
   end
 
   def run args
@@ -16,10 +16,10 @@ class ORS
           ORS::Commands.const_get(klass_string).run
         else
           info "ERROR: Invalid options given."
-          Help.run
+          ORS::Commands::Help.run
         end
       else
-        Help.run
+        ORS::Commands::Help.run
       end
     end
   end
@@ -29,4 +29,5 @@ class ORS
   def available_commands
     ORS::Commands.constants.map {|klass| klass.to_s }
   end
+
 end

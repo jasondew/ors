@@ -12,7 +12,7 @@ class ORS
           ].join
         end.join("\n")
 
-        puts timestamps unless pretending
+        puts timestamps unless ORS.config[:pretending]
       end
 
       def usage

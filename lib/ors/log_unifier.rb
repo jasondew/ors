@@ -1,4 +1,4 @@
-module ORS
+class ORS
 
   class LogUnifier
 
@@ -20,7 +20,7 @@ module ORS
         sort_by {|entry| entry[:timestamp] }.
         map do |entry|
           entry[:lines].
-          map {|line| ["[#{entry[:server]}]".ljust(pretty_adjust + 3), line].join }.
+          map {|line| ["[#{entry[:server]}]".ljust(pretty_adjust + 3), line].join.strip }.
           join "\n"
         end.
         flatten.

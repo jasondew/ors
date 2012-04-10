@@ -12,7 +12,7 @@ class ORS
         # get results
         results = execute_command(ORS.config[:console_server],
                                   prepare_environment,
-                                  %(if [ -f script/rails ]; then bundle exec rails runner -e #{environment} \\"#{code}\\"; else ./script/runner -e #{environment} \\"#{code}\\"; fi),
+                                  %(if [ -f script/rails ]; then bundle exec rails runner -e #{ORS.config[:environment]} \\"#{@code}\\"; else ./script/runner -e #{ORS.config[:environment]} \\"#{@code}\\"; fi),
                                   :capture => true, :quiet_ssh => true)
 
         # The central_logger gem spits this out

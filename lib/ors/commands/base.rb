@@ -5,11 +5,11 @@ class ORS
 
       module ClassMethods
         def run_without_setup
-          self.new.execute
+          new.execute
         end
 
         def run
-          command = self.new
+          command = new
           command.setup
 
           # now that the command has had a chance at the args

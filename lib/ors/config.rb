@@ -1,4 +1,4 @@
-module ORS
+class ORS
   class Config
 
     CONFIG_FILENAME = "config/deploy.yml"
@@ -24,9 +24,13 @@ module ORS
     end
 
     def parse_options(options)
-      @@options[:pretending] = true if ar.delete("-p") || ar.delete("--pretending")
+      @@options[:pretending] = true if options.delete("-p") || options.delete("--pretend")
 
-      @@options[:use_gateway] = false if ar.delete("-ng") || ar.delete("--no-gateway")
+      if options.delete("-ng") || options.delete("--no-gateway")
+        @@options[:use_gateway] = false
+      else
+        @@options[:use_gateway] = true
+      end
 
       # grab environment
       index = options.index("to") || options.index("from")
@@ -34,7 +38,6 @@ module ORS
         @@options[:environment] = options.delete_at(index + 1)
         options.delete_at(index)
       end
-
 
       @@options[:args] = options.dup
 
@@ -45,8 +48,7 @@ module ORS
       @@options[:environment]    ||= "production"
       @@options[:remote]         ||= "origin"
       @@options[:branch]         ||= @@options[:environment]
-      @@options[:pretending]       = false
-      @@options[:use_gateway]      = true
+      @@options[:pretending]     ||= false
       @@options[:log_lines]        = 100
 
       @@options[:gateway]          = "deploy-gateway"
@@ -61,7 +63,8 @@ module ORS
 
     def parse_config_file
       if File.exists?(CONFIG_FILENAME)
-        YAML.load(File.read(CONFIG_FILENAME)).each {|(name, value)| @@options[name.to_sym] = value
+        YAML.load(File.read(CONFIG_FILENAME)).each do |(name, value)|
+          @@options[name.to_sym] = value
         end
       end
     end
@@ -73,8 +76,8 @@ module ORS
 
       @@options[:revision] = git.log(1).first.sha
 
-      @@options[:ruby_servers] = (@@options[:app_servers] + [@@options[:console_server], @@options[:cron_server], @@options[:migration_server]]).uniq
-      @@options[:all_servers] = (@@options[:web_servers] + @@options[:ruby_servers]).uniq
+      @@options[:ruby_servers] = [@@options[:app_servers], @@options[:console_server], @@options[:cron_server], @@options[:migration_server]].flatten.compact.uniq
+      @@options[:all_servers] = [@@options[:web_servers], @@options[:ruby_servers]].flatten.compact.uniq
     end
 
     def git
@@ -82,7 +85,7 @@ module ORS
     end
 
     def valid?
-      name.to_s.size > 0 and valid_environments.include?(@@options[:environment])
+      name.to_s.size > 0
     end
 
 
@@ -101,16 +104,16 @@ module ORS
     end
 
     def name
-      @name ||= remote_url.gsub(/^[\w]*(@|:\/\/)[^\/:]*(\/|:)([a-zA-Z0-9\/_-]*)(.git)?$/i, '\3')
+      @name ||= remote_url.gsub(/^[\w]*(@|:\/\/)[^\/:]*(\/|:)([a-zA-Z0-9\/_\-]*)(.git)?$/i, '\3')
     end
 
     def deploy_directory
-      directory = File.join(base_path, name)
+      directory = File.join(@@options[:base_path], @@options[:name])
 
-      if environment == "production"
+      if @@options[:environment] == "production"
         directory
       else
-        "#{directory}_#{environment}"
+        "#{directory}_#{@@options[:environment]}"
       end
     end
   end

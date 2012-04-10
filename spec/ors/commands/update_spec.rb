@@ -4,14 +4,14 @@ describe ORS::Commands::Update do
 
   context "#run" do
     before do
-      ORS::Config.parse_options []
-      ORS::Config.parse_config_file
+      ORS.config.parse_options([])
+      ORS.config.parse_config_file
     end
 
     it "should update code, bundle install, and set up cron" do
-      stub(subject).all_servers { :all_servers }
-      stub(subject).ruby_servers { :ruby_servers }
-      stub(subject).cron_server { :cron_server }
+      ORS.config[:all_servers] = :all_servers
+      ORS.config[:ruby_servers] = :ruby_servers
+      ORS.config[:cron_server] = :cron_server
 
       mock(subject).info /updating/
       mock(subject).execute_in_parallel(:all_servers)
