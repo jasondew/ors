@@ -1,13 +1,12 @@
-module ORS::Commands
+class ORS
+  module Commands
+    class Migrate < Base
 
-  class Migrate < Base
+      def execute
+        info "migrating #{ORS.config[:name]} #{ORS.config[:environment]}..."
 
-    def execute
-      info "migrating #{name} #{environment}..."
-
-      run_migrations migration_server
-    end
-
+        run_migrations ORS.config[:migration_server]
+      end
+    end # Migrate < Base
   end
-
 end

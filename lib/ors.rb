@@ -3,6 +3,7 @@ require "git"
 require "yaml"
 require "erb"
 
+require "ors/base"
 require "ors/version"
 require "ors/core_ext"
 require "ors/log_unifier"
