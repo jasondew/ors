@@ -26,7 +26,7 @@ module ORS
     def update_code server
       info "[#{server}] updating codebase..."
 
-      execute_command server, prepare_environment,
+      execute_command server, prepare_environment(false),
                               %(git fetch #{remote_alias}),
                               %(git checkout -q -f #{remote_alias}/#{environment}),
                               %(git reset --hard),
@@ -140,9 +140,8 @@ module ORS
                             ]
     end
 
-    def prepare_environment
-      [%(source ~/.rvm/scripts/rvm),
-       %({ cd #{deploy_directory} > /dev/null; })] # Silence RVM's "Using... gemset..."
+    def prepare_environment(load_rvm = true)
+      (load_rvm ? [%(source ~/.rvm/scripts/rvm)] : []) << %({ cd #{deploy_directory} > /dev/null; })
     end
 
     def info message
