@@ -92,19 +92,19 @@ class ORS
     private
 
     #
-    # some methods to help finalize the config
+    # methods to help finalize the config
     #
 
     def remote_url
-      @remote_url ||= if git.config.has_key?("remote.#{@@options[:remote]}.url")
-                        git.config["remote.#{@@options[:remote]}.url"]
-                      else
-                        raise StandardError, "There is no #{@@options[:remote]} remote in your git config, please check your config/deploy.yml"
-                      end
+      if git.config.has_key?("remote.#{@@options[:remote]}.url")
+        git.config["remote.#{@@options[:remote]}.url"]
+      else
+        raise StandardError, "There is no #{@@options[:remote]} remote in your git config, please check your config/deploy.yml"
+      end
     end
 
     def name
-      @name ||= remote_url.gsub(/^[\w]*(@|:\/\/)[^\/:]*(\/|:)([a-zA-Z0-9\/_\-]*)(.git)?$/i, '\3')
+      remote_url.gsub(/^[\w]*(@|:\/\/)[^\/:]*(\/|:)([a-zA-Z0-9\/_\-]*)(.git)?$/i, '\3')
     end
 
     def deploy_directory

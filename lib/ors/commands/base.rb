@@ -16,8 +16,13 @@ class ORS
           # we let our config finish its setup of variables
           ORS.config.finalize!
 
-          # now execute the command
-          command.execute
+          if ORS.config.valid?
+            # now execute the command
+            command.execute
+          else
+            info "ERROR: Invalid options given."
+            ORS::Commands::Help.run_without_setup
+          end
         end
       end
       extend ClassMethods
