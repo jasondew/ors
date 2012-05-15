@@ -9,6 +9,8 @@ describe ORS::Commands::Base do
 
   context ".run" do
     it "should instantiate the command and call #setup and #execute on it" do
+      mock(ORS.config).finalize! {true}
+      mock(ORS.config).valid? {true}
       mock(@command).setup.subject
       mock(@command).execute.subject
 
