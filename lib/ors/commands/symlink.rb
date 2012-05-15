@@ -12,9 +12,7 @@ class ORS
         execute_in_parallel(ORS.config[:ruby_servers]) do |server|
           execute_command(server,
                           prepare_environment,
-                          %(cd config/deploy),
-                          %(for i in `find ./ -type f`; do ln -s `pwd`/$i ../../$i; done),
-                          %(cd ../..),
+                          %(if [ -f config/deploy/#{ORS.config[:environment]} ]; then cd config/deploy/#{ORS.config[:environment]}; for i in `find ./ -type f`; do ln -s `pwd`/$i ../../$i; done; cd ../../..; fi),
                           :exec => true)
 
         end
