@@ -9,7 +9,7 @@ class ORS
       def execute
         info "deploying #{ORS.config[:name]} #{ORS.config[:environment]}..."
 
-        [Update, Migrate].each {|command| command.run_without_setup }
+        [Update, Symlink, Migrate].each {|command| command.run_without_setup }
 
         if ORS.config[:remote_deploy_hook]
           execute_in_parallel(ORS.config[:app_servers]) do |server|

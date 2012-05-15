@@ -8,6 +8,7 @@ describe ORS::Commands::Deploy do
       mock(subject).info /deploying/
 
       mock(ORS::Commands::Update).run_without_setup
+      mock(ORS::Commands::Symlink).run_without_setup
       mock(ORS::Commands::Migrate).run_without_setup
       mock(ORS::Commands::Restart).run_without_setup
 
