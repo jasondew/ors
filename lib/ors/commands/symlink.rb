@@ -10,10 +10,11 @@ class ORS
         info "symlinking #{ORS.config[:name]} #{ORS.config[:environment]}..."
 
         execute_in_parallel(ORS.config[:ruby_servers]) do |server|
+          info "[#{server}] symlinking..."
           execute_command(server,
                           prepare_environment,
-                          %(if [ -f config/deploy ]; then cd config/deploy; for i in `find ./ -type f`; do ln -nfs `pwd`/$i ../../$i; done; cd ../../; fi),
-                          :exec => true)
+                          #%(if [ -d config/deploy ]; then cd config/deploy; for i in ./**/*; do if [ -f \\\$i ]; then echo \\\$i; fi; done; cd ../../; fi))
+                          %(if [ -d config/deploy ]; then cd config/deploy; for i in ./**/*; do if [ -f \\\$i ]; then ln -nfs #{ORS.config[:deploy_directory]}/config/deploy/\\\$i ../../\\\$i; fi; done; cd ../../; fi))
 
         end
       end
