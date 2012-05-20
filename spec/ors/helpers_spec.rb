@@ -43,7 +43,9 @@ describe ORS::Helpers do
     end
 
     context "with gateway" do
-      before { mock(subject).use_gateway.returns(true) }
+      before do
+        ORS.config[:use_gateway] = true
+      end
 
       it "should build the command" do
         subject.build_command("server", %(cd /tmp)).should == %(ssh deploy-gateway 'ssh deployer@server "cd /tmp"')
@@ -59,7 +61,9 @@ describe ORS::Helpers do
     end
 
     context "without gateway" do
-      before { mock(subject).use_gateway.returns(false) }
+      before do
+        ORS.config[:use_gateway] = false
+      end
 
       it "should build the command" do
         subject.build_command("server", %(cd /tmp)).should == %(ssh deployer@server "cd /tmp")

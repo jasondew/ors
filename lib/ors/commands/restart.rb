@@ -1,13 +1,11 @@
-module ORS::Commands
+class ORS
+  module Commands
+    class Restart < Base
+      def execute
+        info "restarting #{ORS.config[:name]} #{ORS.config[:environment]}..."
 
-  class Restart < Base
-
-    def execute
-      info "restarting #{name} #{environment}..."
-
-      execute_in_parallel(app_servers) {|server| restart_server server }
-    end
-
+        execute_in_parallel(ORS.config[:app_servers]) {|server| restart_server server }
+      end
+    end # Restart < Base
   end
-
 end

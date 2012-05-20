@@ -1,9 +1,9 @@
-module ORS::Commands
+class ORS
+  module Commands
+    class Help < Base
 
-  class Help < Base
-
-    def execute
-      puts <<-END
+      def execute
+        puts <<-END
 Usage: ./ors <action> [environment=production] [options]
 
 === Actions
@@ -25,11 +25,9 @@ update        Updates the code on all servers
 Must be one of: production demo staging
 Defaults to production.
 
-=== Options
---pretend    (or -p)   Don't execute anything, just show me what you're going to do (default: false)
---no-gateway (or -ng)  Don't use a gateway (if you're inside the firewall)          (default: true)
-      END
-    end
-
+#{help_options}
+        END
+      end
+    end # Help < Base
   end
 end

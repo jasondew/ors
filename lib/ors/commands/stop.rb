@@ -1,13 +1,11 @@
-module ORS::Commands
+class ORS
+  module Commands
+    class Stop < Base
+      def execute
+        info "stopping #{ORS.config[:name]} #{ORS.config[:environment]}..."
 
-  class Stop < Base
-
-    def execute
-      info "stopping #{name} #{environment}..."
-
-      execute_in_parallel(app_servers) {|server| stop_server server }
-    end
-
+        execute_in_parallel(ORS.config[:app_servers]) {|server| stop_server server }
+      end
+    end # Stop < Base
   end
-
 end

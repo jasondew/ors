@@ -1,90 +1,120 @@
-module ORS
-  module Config
+class ORS
+  class Config
 
-    CONFIG_FILENAME="config/deploy.yml"
+    CONFIG_FILENAME = "config/deploy.yml"
 
-    mattr_accessor :name, :environment, :use_gateway, :pretending, :log_lines, :rails2, :deploy_hook, :remote_deploy_hook
-    mattr_accessor :gateway, :deploy_user, :repo, :base_path, :web_servers, :app_servers, :migration_server, :console_server, :cron_server
-    mattr_accessor :options
+    @@args = []
+    @@options = {}
 
-    self.environment = "production"
-    self.pretending = false
-    self.use_gateway = true
-    self.log_lines = 100
+    def initialize(options)
+      parse_options(options)
+      parse_config_file
+    end
 
-    module ModuleMethods
+    def _options
+      @@options
+    end
 
-      def parse_options options
-        self.name = name_from_git
-        self.environment = options.shift unless options.empty? or options.first.match(/^-/)
-        self.options = options.dup
+    def [](key)
+      @@options[key]
+    end
 
-        options.each do |option|
-          case option
-            when "-p", "--pretend" then self.pretending = true
-            when "-ng", "--no-gateway" then self.use_gateway = false
-          end
+    def []=(key, value)
+      @@options[key] = value
+    end
+
+    def parse_options(options)
+      @@options[:pretending] = true if options.delete("-p") || options.delete("--pretend")
+
+      if options.delete("-ng") || options.delete("--no-gateway")
+        @@options[:use_gateway] = false
+      else
+        @@options[:use_gateway] = true
+      end
+
+      # grab environment
+      index = options.index("to") || options.index("from")
+      unless index.nil?
+        @@options[:environment] = options.delete_at(index + 1)
+        options.delete_at(index)
+      end
+
+      @@options[:args] = options.dup
+
+      set_default_options
+    end
+
+    def set_default_options
+      @@options[:environment]    ||= "production"
+      @@options[:remote]         ||= "origin"
+      @@options[:branch]         ||= @@options[:environment]
+      @@options[:pretending]     ||= false
+      @@options[:log_lines]        = 100
+
+      @@options[:gateway]          = "deploy-gateway"
+      @@options[:user]             = "deployer"
+      @@options[:base_path]        = "/var/www"
+      @@options[:web_servers]      = %w(koala)
+      @@options[:app_servers]      = %w(eel jellyfish squid)
+      @@options[:migration_server] = "tuna"
+      @@options[:console_server]   = "tuna"
+      @@options[:cron_server]      = "tuna"
+    end
+
+    def parse_config_file
+      if File.exists?(CONFIG_FILENAME)
+        YAML.load(File.read(CONFIG_FILENAME)).each do |(name, value)|
+          @@options[name.to_sym] = value
         end
       end
-
-      def parse_config_file
-        if File.exists?(CONFIG_FILENAME)
-          YAML.load(File.read(CONFIG_FILENAME)).each {|(name, value)| send "#{name}=", value }
-        else
-          self.gateway          = "deploy-gateway"
-          self.deploy_user      = "deployer"
-          self.repo             = "ors_git"
-          self.base_path        = "/var/www"
-          self.web_servers      = %w(koala)
-          self.app_servers      = %w(eel jellyfish squid)
-          self.migration_server = "tuna"
-          self.console_server   = "tuna"
-          self.cron_server      = "tuna"
-        end
-      end
-
-      def valid_options?
-        name.to_s.size > 0 and valid_environments.include?(environment)
-      end
-
-      def valid_environments
-        %w(production demo staging)
-      end
-
-      def git
-        @git ||= Git.open(Dir.pwd)
-      end
-
-      private
-
-      def name_from_git
-        git.config["remote.origin.url"].gsub(/^[\w]*(@|:\/\/)[^\/:]*(\/|:)([a-zA-Z0-9\/_-]*)(.git)?$/i, '\3')
-      end
-
-    end
-    extend ModuleMethods
-
-    def ruby_servers
-      (app_servers + [console_server, cron_server, migration_server]).uniq
     end
 
-    def all_servers
-      (web_servers + ruby_servers).uniq
+    def finalize!
+      @@options[:name] = name
+      @@options[:remote_url] = remote_url
+      @@options[:deploy_directory] = deploy_directory
+
+      @@options[:revision] = git.log(1).first.sha
+
+      @@options[:ruby_servers] = [@@options[:app_servers], @@options[:console_server], @@options[:cron_server], @@options[:migration_server]].flatten.compact.uniq
+      @@options[:all_servers] = [@@options[:web_servers], @@options[:ruby_servers]].flatten.compact.uniq
     end
 
-    def revision
-      Config.git.log(1).first.sha
+    def git
+      @git ||= Git.open(Dir.pwd)
+    end
+
+    def valid?
+      name.to_s.size > 0
+    end
+
+
+    private
+
+    #
+    # methods to help finalize the config
+    #
+
+    def remote_url
+      if git.config.has_key?("remote.#{@@options[:remote]}.url")
+        git.config["remote.#{@@options[:remote]}.url"]
+      else
+        raise StandardError, "There is no #{@@options[:remote]} remote in your git config, please check your config/deploy.yml"
+      end
+    end
+
+    def name
+      remote_url.gsub(/^[\w]*(@|:\/\/)[^\/:]*(\/|:)([a-zA-Z0-9\/_\-]*)(.git)?$/i, '\3')
     end
 
     def deploy_directory
-      directory = File.join base_path, name
+      directory = File.join(@@options[:base_path], @@options[:name])
 
-      if environment == "production"
+      if @@options[:environment] == "production"
         directory
       else
-        "#{directory}_#{environment}"
+        "#{directory}_#{@@options[:environment]}"
       end
     end
-
   end
 end

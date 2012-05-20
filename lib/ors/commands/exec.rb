@@ -1,13 +1,20 @@
-module ORS::Commands
+class ORS
+  module Commands
+    class Exec < Base
 
-  class Exec < Base
+      def setup
+        @command = ORS.config[:args].shift
+      end
 
-    def execute
-      info "executing command for #{name} #{environment}..."
+      def execute
+        info "executing command for #{ORS.config[:name]} #{ORS.config[:environment]}..."
 
-      execute_command migration_server, prepare_environment, %(bundle exec #{ENV["CMD"]})
-    end
+        execute_command migration_server, prepare_environment, %(bundle exec #{@command})
+      end
 
+      def usage
+        "./ors exec command [options]"
+      end
+    end # Exec < Base
   end
-
 end

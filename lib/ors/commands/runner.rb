@@ -1,33 +1,37 @@
-module ORS::Commands
-  class Runner < Base
-    def execute
-      begin
-        code = ORS::Config.options[ ORS::Config.options.index{|e| e =~ /^(-c|--code)$/} + 1 ]
-        raise if code.strip.empty?
-      rescue
-        fatal "ERROR: Missing option --code 'ruby code'."
+class ORS
+  module Commands
+    class Runner < Base
+      def setup
+        @code = ORS.config[:args].shift
       end
-      results = execute_command console_server, prepare_environment,
-                                                %(if [ -f script/rails ]; then bundle exec rails runner -e #{environment} \\"#{code}\\"; else ./script/runner -e #{environment} \\"#{code}\\"; fi),
-                                                :capture => true, :quiet_ssh => true
-      results.sub!(/\AUsing BufferedLogger due to exception: .*?\n/, '') # The central_logger gem spits this out without any way of shutting it up
-      puts results
-    end
 
-    def help
-      puts <<-END
-Usage: ./ors runner [environment=production] --code "ruby code here" [options]
+      def execute
+        # need code to run
+        fatal "ERROR: Missing 'ruby code'." if @code.nil?
 
-=== Description
+        # get results
+        results = execute_command(ORS.config[:console_server],
+                                  prepare_environment,
+                                  %(if [ -f script/rails ]; then bundle exec rails runner -e #{ORS.config[:environment]} \\"#{@code}\\"; else ./script/runner -e #{ORS.config[:environment]} \\"#{@code}\\"; fi),
+                                  :capture => true, :quiet_ssh => true)
+
+        # The central_logger gem spits this out
+        results.sub!(/\AUsing BufferedLogger due to exception: .*?\n/, '')
+
+        puts results
+      end
+
+      def usage
+        "./ors runner 'ruby code here' [options]"
+      end
+
+      def description
+        <<-END
 Runs rails runner returning the result on STDOUT.
 The ruby code will be transmitted within several nested quotes:  '"\"ruby code here\""'
 Keep that in mind if you need to use quotes.
-
-=== Options
---code       (or -c)   The code to run.
---pretend    (or -p)   Don't execute anything, just show me what you're going to do
---no-gateway (or -ng)  Don't use a gateway (if you're inside the firewall)
-      END
-    end
+        END
+      end
+    end # Runner < Base
   end
 end

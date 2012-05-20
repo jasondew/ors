@@ -5,4 +5,4 @@ $LOAD_PATH.unshift(lib) if File.directory?(lib) and (not $LOAD_PATH.include? lib
 
 require "ors"
 
-ORS::Command.run ARGV
+ORS.new.run ARGV

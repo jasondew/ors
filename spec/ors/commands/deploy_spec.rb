@@ -7,9 +7,10 @@ describe ORS::Commands::Deploy do
     it "should call update, migrate, then restart" do
       mock(subject).info /deploying/
 
-      mock(subject).run(ORS::Commands::Update)
-      mock(subject).run(ORS::Commands::Migrate)
-      mock(subject).run(ORS::Commands::Restart)
+      mock(ORS::Commands::Update).run_without_setup
+      mock(ORS::Commands::Symlink).run_without_setup
+      mock(ORS::Commands::Migrate).run_without_setup
+      mock(ORS::Commands::Restart).run_without_setup
 
       subject.execute
     end
