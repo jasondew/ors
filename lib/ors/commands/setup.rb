@@ -13,7 +13,7 @@ class ORS
 
           execute_command(ORS.config[:migration_server],
                           prepare_environment,
-                          %(RAILS_ENV=#{environment} bundle exec rake db:create))
+                          %(RAILS_ENV=#{ORS.config[:environment]} bundle exec rake db:create))
         else
           info "Setup aborted."
         end
