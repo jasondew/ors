@@ -104,7 +104,7 @@ class ORS
     end
 
     def name
-      remote_url.gsub(/^[\w]*(@|:\/\/)[^\/:]*(\/|:)([a-zA-Z0-9\/_\-]*)(.git)?$/i, '\3')
+      remote_url.gsub(/^[\w]*(@|:\/\/)[^\/:]*(\/|:)([\w\.\/_\-]+)$/, '\3').gsub(/\.git$/i, '')
     end
 
     def deploy_directory
