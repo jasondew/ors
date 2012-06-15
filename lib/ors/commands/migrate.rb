@@ -3,9 +3,14 @@ class ORS
     class Migrate < Base
 
       def execute
-        info "migrating #{ORS.config[:name]} #{ORS.config[:environment]}..."
+        if migrations_exist?
+          info "migrating #{ORS.config[:name]} #{ORS.config[:environment]}..."
+          run_migrations ORS.config[:migration_server]
+        end
+      end
 
-        run_migrations ORS.config[:migration_server]
+      def migrations_exist?
+        Dir.exists? File.join(%w{db migrate})
       end
     end # Migrate < Base
   end
