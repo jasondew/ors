@@ -43,7 +43,7 @@ module ORS
       info "[#{server}] starting puma..."
 
       execute_command server, prepare_environment,
-                              %(if [ -f config.ru ]; then RAILS_ENV=#{environment} bundle exec puma -c config/puma.rb -D -E #{environment}; else RAILS_ENV=#{environment} bundle exec puma_rails -c config/puma.rb -D -E #{environment}; fi)
+                              %(RAILS_ENV=#{environment} bundle exec puma -C config/puma/#{environment}.rb)
     end
 
     def stop_server server
