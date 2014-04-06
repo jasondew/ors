@@ -40,24 +40,24 @@ module ORS
     end
 
     def start_server server
-      info "[#{server}] starting unicorn..."
+      info "[#{server}] starting puma..."
 
       execute_command server, prepare_environment,
-                              %(if [ -f config.ru ]; then RAILS_ENV=#{environment} bundle exec unicorn -c config/unicorn.rb -D -E #{environment}; else RAILS_ENV=#{environment} bundle exec unicorn_rails -c config/unicorn.rb -D -E #{environment}; fi)
+                              %(if [ -f config.ru ]; then RAILS_ENV=#{environment} bundle exec puma -c config/puma.rb -D -E #{environment}; else RAILS_ENV=#{environment} bundle exec puma_rails -c config/puma.rb -D -E #{environment}; fi)
     end
 
     def stop_server server
-      info "[#{server}] stopping unicorn..."
+      info "[#{server}] stopping puma..."
 
       execute_command server, prepare_environment,
-                              %(kill \\`cat tmp/pids/unicorn.pid\\`)
+                              %(kill \\`cat tmp/pids/puma.pid\\`)
     end
 
     def restart_server server
-      info "[#{server}] restarting unicorn..."
+      info "[#{server}] restarting puma..."
 
       execute_command server, prepare_environment,
-                              %(kill -USR2 \\`cat tmp/pids/unicorn.pid\\`)
+                              %(kill -USR2 \\`cat tmp/pids/puma.pid\\`)
     end
 
     def run_migrations server
