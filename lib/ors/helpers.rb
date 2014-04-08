@@ -50,14 +50,14 @@ module ORS
       info "[#{server}] stopping puma..."
 
       execute_command server, prepare_environment,
-                              %(pumactl -F #{deploy_directory}/config/puma/#{environment}.rb stop)
+                              %(pumactl -S #{deploy_directory}/tmp/pids/puma.state stop)
     end
 
     def restart_server server
       info "[#{server}] restarting puma..."
 
       execute_command server, prepare_environment,
-                              %(pumactl -F #{deploy_directory}/config/puma/#{environment}.rb phased-restart)
+                              %(pumactl -S #{deploy_directory}/tmp/pids/puma.state restart)
     end
 
     def run_migrations server
