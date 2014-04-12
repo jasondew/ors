@@ -57,7 +57,7 @@ module ORS
       info "[#{server}] restarting puma..."
 
       execute_command server, prepare_environment,
-                              %(pumactl -S #{deploy_directory}/tmp/pids/puma.state restart)
+                              %(pumactl -S #{deploy_directory}/tmp/pids/puma.state phased-restart)
     end
 
     def run_migrations server
