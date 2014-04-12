@@ -36,7 +36,7 @@ module ORS
       info "[#{server}] installing bundle..."
 
       execute_command server, prepare_environment,
-                              %(bundle install --without development test osx_development > bundler.log)
+                              %(bundle install --deployment > bundler.log)
     end
 
     def start_server server
